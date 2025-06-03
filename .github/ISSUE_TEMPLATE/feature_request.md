@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature or improvement for the Yle News Summary Bot
+about: Suggest a new feature or improvement for the Task Management Bot
 title: "[Feature] <brief description>"
 labels: enhancement
 assignees: ''

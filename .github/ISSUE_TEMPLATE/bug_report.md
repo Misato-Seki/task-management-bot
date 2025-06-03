@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug in the Yle News Summary Bot
+about: Report a bug in the Task Management Bot
 title: "[Bug] <brief description>"
 labels: bug
 assignees: ''
