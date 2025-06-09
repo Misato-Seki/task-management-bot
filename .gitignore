@@ -1,3 +1,4 @@
 venv
 bulk_issues.py
 .env
+.DS_Store
