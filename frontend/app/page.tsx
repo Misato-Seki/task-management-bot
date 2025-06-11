@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation'
+import GoogleIcon from "@mui/icons-material/Google";
+
+// import { useRouter } from 'next/navigation'
 export default function Home() {
-  const router = useRouter();
+  // const router = useRouter();
   return (
     <section className="flex flex-col items-center justify-center min-h-[70vh] h-screen w-full bg-[#F1F7F8] md:flex-row">
       {/* Hero Image */}
@@ -27,9 +29,9 @@ export default function Home() {
         <p className="text-xl sm:text-2xl md:text-3xl font-normal text-[#69B9D8] font-sans">
           productivity hub
         </p>
-        <div className="" onClick={() => {router.push("/signin")}}>
-          <Button className="rounded-xl h-10 text-white bg-[#5093B4] hover:bg-[#5093B4]/90">Sign In</Button>
-        </div>
+        <a href="http://localhost:8000/auth/google">
+          <Button variant="taskbotBlue"><GoogleIcon/>Login with Google</Button>
+        </a>
       </div>
     </section>
   );
