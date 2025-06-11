@@ -9,6 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        taskbotBlue:
+          "rounded-lg text-white bg-[#5093B4] hover:bg-[#5093B4]/90",
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:

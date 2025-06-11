@@ -1,9 +1,25 @@
 const express = require('express');
 const { PrismaClient } = require('../generated/prisma');
+const session = require('express-session');
+const passport = require('passport');
+
+const authRoutes = require('./auth'); // Import the authentication routes from auth.js
+
 const app = express();
 const prisma = new PrismaClient();
 
 app.use(express.json());
+
+// set up session (=「この人はログイン中だよ」という情報を一時的に覚えておく仕組み)
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize()); // initialize passport
+app.use(passport.session()); // connect passport to session = users stay logged in after authentication
+app.use(authRoutes); // use the authentication routes
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
