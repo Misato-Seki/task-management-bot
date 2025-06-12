@@ -2,13 +2,18 @@ const express = require('express');
 const { PrismaClient } = require('../generated/prisma');
 const session = require('express-session');
 const passport = require('passport');
-
+const cors = require('cors');
 const authRoutes = require('./auth'); // Import the authentication routes from auth.js
 
 const app = express();
 const prisma = new PrismaClient();
 
 app.use(express.json());
+
+app.use(cors({
+  origin: process.env.BASE_FRONTEND_URL || 'http://localhost:3000', // Allow requests from the frontend
+  credentials: true // Allow cookies to be sent with requests
+}));
 
 // set up session (=「この人はログイン中だよ」という情報を一時的に覚えておく仕組み)
 app.use(session({
@@ -23,8 +28,7 @@ app.use(authRoutes); // use the authentication routes
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
-}
-);
+});
 
 app.get('/users', async (req, res) => {
   const users = await prisma.user.findMany();
