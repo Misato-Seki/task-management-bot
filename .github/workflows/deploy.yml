@@ -13,6 +13,14 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
+        - name: Create .env file
+          run: |
+            mkdir -p backend
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> backend/.env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> backend/.env
+            echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" >> backend/.env
+            echo "DATABASE_URL=postgres://user:password@db:5432/mydb" >> backend/.env
+
         - name: Copy files to VM
           uses: appleboy/scp-action@master
           with:
