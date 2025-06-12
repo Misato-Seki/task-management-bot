@@ -10,7 +10,7 @@ export default function Dashboard() {
         })
             .then(res => res.json())
             .then(data => {
-                if (!data.isAuthenticated) {
+                if (!data.authenticated) {
                     router.push('/unauthorized');
                 }
             });
