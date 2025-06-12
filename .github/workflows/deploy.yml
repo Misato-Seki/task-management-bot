@@ -45,5 +45,6 @@ jobs:
             script: |
               cd /home/${{ secrets.GCP_VM_USERNAME }}/projects/task-management-bot
               docker compose down
+              docker system prune -af --volumes
               docker compose up -d --build
 
