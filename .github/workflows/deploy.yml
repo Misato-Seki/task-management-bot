@@ -21,6 +21,7 @@ jobs:
             echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" >> backend/.env
             echo "BASE_FRONTEND_URL=https://taskbot.misatosan.com" >> backend/.env
             echo "DATABASE_URL=postgres://user:password@db:5432/mydb" >> backend/.env
+            echo "GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}" >> backend/.env
 
         - name: Create frontend .env file
           run: |
@@ -45,6 +46,6 @@ jobs:
             script: |
               cd /home/${{ secrets.GCP_VM_USERNAME }}/projects/task-management-bot
               docker compose down
-              docker system prune -af
+              docker system prune -af > /dev/null	
               docker compose up -d --build
 
