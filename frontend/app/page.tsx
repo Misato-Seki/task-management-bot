@@ -29,7 +29,7 @@ export default function Home() {
         <p className="text-xl sm:text-2xl md:text-3xl font-normal text-[#69B9D8] font-sans">
           productivity hub
         </p>
-        <a href="http://localhost:8000/auth/google">
+        <a href={`${process.env.NEXT_PUBLIC_API_URL}`} className="w-full">
           <Button variant="taskbotBlue"><GoogleIcon/>Login with Google</Button>
         </a>
       </div>

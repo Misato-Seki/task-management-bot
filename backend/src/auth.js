@@ -4,6 +4,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy; // GoogleStr
 
 const router = express.Router();
 
+const BASE_FRONTEND_URL = process.env.BASE_FRONTEND_URL || 'http://localhost:3000';
 const ALLOWED_EMAIL = process.env.ALLOWED_EMAIL;
 
 // how to save the user's info after logging in
@@ -35,10 +36,10 @@ router.get('/auth/google',
 
 // When Google redirects back to our app, this route handles the response
 router.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: 'http://localhost:3000/unauthorized' }),
+  passport.authenticate('google', { failureRedirect: `${BASE_FRONTEND_URL}/unauthorized` }),
   (req, res) => {
     // Successful authentication, redirect to the home page
-    res.redirect('http://localhost:3000/dashboard');
+    res.redirect(`${BASE_FRONTEND_URL}/dashboard`);
   }
 );
 
