@@ -18,11 +18,13 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL
   },
-  (accessToken, refreshToken, profile, done) => {
+  function(accessToken, refreshToken, profile, done) {
     const email = profile.emails[0].value;
     if (email !== ALLOWED_EMAIL) {
       return done(null, false);
     }
+    // accessTokenをprofileオブジェクトに含めておく
+    profile.accessToken = accessToken;
     return done(null, profile);
   }
 ));
@@ -30,7 +32,7 @@ passport.use(new GoogleStrategy({
 // When someone visits /auth/google, they start the Google login process
 router.get('/auth/google',
   passport.authenticate('google', {
-    scope: ['profile', 'email'] // what info to request from Google
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar.readonly'] // カレンダー読み取り権限を追加
   })
 );
 
@@ -38,7 +40,10 @@ router.get('/auth/google',
 router.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: `${BASE_FRONTEND_URL}/unauthorized` }),
   (req, res) => {
-    // Successful authentication, redirect to the home page
+    // 認証後、accessTokenをセッションに保存
+    if (req.user && req.user.accessToken) {
+      req.session.accessToken = req.user.accessToken;
+    }
     res.redirect(`${BASE_FRONTEND_URL}/dashboard`);
   }
 );
@@ -46,7 +51,7 @@ router.get('/auth/google/callback',
 // Route to check if the user is authenticated
 router.get('/auth/check', (req, res) => {
   if (req.isAuthenticated && req.isAuthenticated()) {
-    return res.json({ authenticated: true, user: req.user });
+    return res.json({ authenticated: true, user: req.user, accessToken: req.session.accessToken });
   }
   return res.json({ authenticated: false });
 });
