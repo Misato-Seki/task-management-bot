@@ -2,9 +2,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+type CalendarEvent = {
+  id: string;
+  summary?: string;
+  start: { dateTime?: string; date?: string };
+  end: { dateTime?: string; date?: string };
+};
+
 export default function Dashboard() {
     const router = useRouter();
-    const [events, setEvents] = useState<any[]>([]);
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -38,7 +45,7 @@ export default function Dashboard() {
                 setEvents(events);
                 setLoading(false);
             })
-            .catch(e => {
+            .catch(() => {
                 setError('認証情報の取得に失敗しました');
                 setLoading(false);
             });
