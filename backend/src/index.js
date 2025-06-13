@@ -4,6 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const cors = require('cors');
 const authRoutes = require('./auth'); // Import the authentication routes from auth.js
+const calendarRoutes = require('./calendar');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -25,6 +26,7 @@ app.use(session({
 app.use(passport.initialize()); // initialize passport
 app.use(passport.session()); // connect passport to session = users stay logged in after authentication
 app.use(authRoutes); // use the authentication routes
+app.use(calendarRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
