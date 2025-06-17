@@ -7,7 +7,7 @@ type CardProps = {
 
 const Card: React.FC<CardProps> = ({ children, className = '' }) => {
   return (
-    <div className={`bg-white rounded-xl p-4 flex flex-col gap-2 ${className}`}>
+    <div className={`bg-white rounded-xl p-4 flex flex-row items-center gap-3 ${className}`}>
       {children}
     </div>
   );

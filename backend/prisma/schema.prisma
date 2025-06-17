@@ -18,5 +18,23 @@ model User {
   id    Int    @id @default(autoincrement())
   name  String
   email String @unique
+  habits Habit[]
 }
 
+model Habit {
+  id    Int    @id @default(autoincrement())
+  title String
+  goal  Int
+  createdAt DateTime
+  archived Boolean
+  userId Int?
+  user User?    @relation(fields: [userId], references: [id])
+  logs HabitLog[]
+}
+
+model HabitLog {
+  id Int @id @default(autoincrement())
+  date DateTime
+  habitId Int
+  habit Habit @relation(fields: [habitId], references: [id])
+}
