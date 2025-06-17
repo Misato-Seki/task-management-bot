@@ -12,5 +12,6 @@ export type Habit = {
     archived: boolean,
     createdAt: string,
     logCount: number,
-    progress: number
+    progress: number,
+    hasLogToday: boolean
 }

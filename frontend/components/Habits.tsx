@@ -1,5 +1,6 @@
 import SectionCard from "./SectionCard";
 import Card from "./Card";
+import { logHabit, deleteHabitLog } from "@/app/hooks/habit";
 import { Habit } from "@/app/types/global";
 import { Button } from "./ui/button";
 import {
@@ -11,10 +12,11 @@ import {
 type HabitsProps = {
     habitLoading: boolean,
     habitError?: string | null,
-    habits: Habit[]
+    habits: Habit[],
+    refetchHabits: () => void
 }
 
-export default function Habits ({ habitLoading, habitError, habits }: HabitsProps) {
+export default function Habits ({ habitLoading, habitError, habits, refetchHabits }: HabitsProps) {
     return (
         <SectionCard title="Habits">
             {habitLoading ? (
@@ -26,7 +28,18 @@ export default function Habits ({ habitLoading, habitError, habits }: HabitsProp
             ) : (
                 habits.map(habit => (
                     <Card key={habit.id}>
-                        <input type="checkbox" className="accent-[#5093B4] w-5 h-5 rounded border-2 border-[#49454F]" />
+                        <input
+                            type="checkbox"
+                            className="accent-[#5093B4] w-5 h-5 rounded border-2 border-[#49454F]"
+                            checked={habit.hasLogToday}
+                            onChange={async (e) => {
+                                if(e.target.checked) {
+                                    await logHabit(habit.id, refetchHabits)
+                                } else {
+                                    await deleteHabitLog(habit.id, refetchHabits)
+                                }
+                            }}
+                        />
                         <div className="w-full">
                             <div className="font-medium">{habit.title || 'No Title'}</div>
                             {/* Progress Bar */}
