@@ -9,5 +9,9 @@ RUN npm install
 COPY . .
 # generate Prisma client
 RUN npx prisma generate
+# 
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 8000
-CMD ["node", "src/index.js"]
+CMD ["/app/entrypoint.sh"]
