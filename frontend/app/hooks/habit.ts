@@ -23,28 +23,55 @@ export async function fetchHabits (
     }
 };
 
-export async function logHabit (habitId: number, fetchHabits: () => void) {
+export async function updateHabit (habitId: number | undefined, title: string, goal: number, refetch: () => void) {
+    try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}habits/${habitId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, goal })
+        })
+        refetch()        
+    } catch (error) {
+        alert("Failed to update habit.");
+        console.error(error);
+    }
+}
+
+export async function deleteHabit (habitId: number | undefined, refetch: () => void) {
+    try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}habits/${habitId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        })
+        refetch()    
+    } catch (error) {
+        alert("Failed to delete habit.");
+        console.error(error);
+    }
+}
+
+export async function logHabit (habitId: number, refetch: () => void) {
     try {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}habits/${habitId}/log`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ date: new Date().toISOString() })
         })
-        fetchHabits() // ← ログ後に再取得
+        refetch()
     } catch (error) {
         alert("Failed to log habit.")
         console.log(error)
     }
 }
 
-export async function deleteHabitLog(habitId: number, fetchHabits: () => void) {
+export async function deleteHabitLog(habitId: number, refetch: () => void) {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}habits/${habitId}/log`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: new Date().toISOString() }),
       });
-      fetchHabits();
+      refetch();
     } catch (error) {
       alert("Failed to delete habit log.");
       console.error(error);

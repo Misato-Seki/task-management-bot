@@ -76,6 +76,8 @@ router.put('/habits/:id', async(req, res) => {
             where: { id: habitId },
             data: { title, goal, archived}
         })
+        // debug用のログ出力
+        console.log(`Habit updated: ${JSON.stringify(updatedHabit)}`);
         res.json(updatedHabit)
     } catch (error) {
         res.status(500).json({error: "Failed to update habit."})       
