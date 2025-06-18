@@ -1,6 +1,6 @@
 import SectionCard from "./SectionCard";
 import Card from "./Card";
-import { logHabit, deleteHabitLog, updateHabit, deleteHabit } from "@/app/hooks/habit";
+import { logHabit, deleteHabitLog, createHabit, updateHabit, deleteHabit } from "@/app/hooks/habit";
 import { Habit } from "@/app/types/global";
 import { Button } from "./ui/button";
 import {
@@ -21,6 +21,7 @@ type HabitsProps = {
 export default function Habits ({ habitLoading, habitError, habits, refetchHabits }: HabitsProps) {
     const [ selectedHabit, setSelectedHabit ] = useState<Habit | null>(null);
     const [ dialogOpen, setDialogOpen ] = useState(false);
+    const [ addDialogOpen, setAddDialogOpen ] = useState(false);
 
     const openEditModal = (habit: Habit) => {
         setSelectedHabit(habit);
@@ -72,9 +73,24 @@ export default function Habits ({ habitLoading, habitError, habits, refetchHabit
                         </Card>
                     ))
                 )}
-                <Button variant="taskbotBlue">Add New Habit</Button>
+                <Button variant="taskbotBlue" onClick={() => setAddDialogOpen(true)}>Add New Habit</Button>
             </SectionCard>
+
+            {/* Add New Habit Dialog */}
+            <HabitEditDialog
+                habit={null}
+                open={addDialogOpen}
+                onClose={() => setAddDialogOpen(false)}
+                onSave={(title, goal) => {
+                    // Handle save logic here
+                    if (!title || !goal) return;
+                    createHabit(title, goal, refetchHabits);
+                    setAddDialogOpen(false);
+                }}
+                onDelete={() => {}} // No delete action for new habit
+            />
             
+            {/* Edit/Delete Habit Dialog */}
             <HabitEditDialog
                 habit={selectedHabit}
                 open={dialogOpen}
@@ -84,14 +100,13 @@ export default function Habits ({ habitLoading, habitError, habits, refetchHabit
                     if (!selectedHabit) return;
                     updateHabit(selectedHabit?.id, title, goal, refetchHabits);
                     setDialogOpen(false);
-                    refetchHabits();
                 }}
                 onDelete={() => {
                     // Handle delete logic here
                     if (!selectedHabit) return;
                     deleteHabit(selectedHabit?.id, refetchHabits);
                     setSelectedHabit(null);
-                    refetchHabits();
+                    setDialogOpen(false);
                 }}
             />
         </>

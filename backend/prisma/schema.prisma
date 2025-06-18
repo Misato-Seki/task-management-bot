@@ -29,12 +29,12 @@ model Habit {
   archived Boolean
   userId Int?
   user User?    @relation(fields: [userId], references: [id])
-  logs HabitLog[]
+  logs HabitLog[]　@relation("HabitLogs")
 }
 
 model HabitLog {
   id Int @id @default(autoincrement())
   date DateTime
   habitId Int
-  habit Habit @relation(fields: [habitId], references: [id])
+  habit Habit @relation("HabitLogs", fields: [habitId], references: [id], onDelete: Cascade)
 }

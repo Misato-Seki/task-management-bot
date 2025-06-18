@@ -58,7 +58,6 @@ router.post('/habits', async(req, res) => {
                 goal,
                 createdAt: new Date(),
                 archived: false,
-                userId: null
             }
         })
         res.status(201).json(habit)
@@ -76,8 +75,6 @@ router.put('/habits/:id', async(req, res) => {
             where: { id: habitId },
             data: { title, goal, archived}
         })
-        // debug用のログ出力
-        console.log(`Habit updated: ${JSON.stringify(updatedHabit)}`);
         res.json(updatedHabit)
     } catch (error) {
         res.status(500).json({error: "Failed to update habit."})       
@@ -86,7 +83,7 @@ router.put('/habits/:id', async(req, res) => {
 
 // 習慣を削除
 router.delete('/habits/:id', async(req, res) => {
-    const habitId = req.params.id
+    const habitId = Number(req.params.id)
     try {
         await prisma.habit.delete({
             where: { id: habitId}

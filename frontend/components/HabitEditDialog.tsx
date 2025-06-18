@@ -15,6 +15,9 @@ type HabitEditModalProps = {
 export default function HabitEditModal({ habit, open, onClose, onSave, onDelete }: HabitEditModalProps) {
     const [title, setTitle] = useState(habit?.title || "");
     const [goal, setGoal] = useState(habit?.goal || 1);
+    const [goalInput, setGoalInput] = useState(habit?.goal?.toString() || "1");
+
+
 
     useEffect(() => {
         if (habit) {
@@ -32,13 +35,21 @@ export default function HabitEditModal({ habit, open, onClose, onSave, onDelete 
                 <Label>Title</Label>
                 <Input placeholder="Habit Title"
                 value={title} onChange={(e) => setTitle(e.target.value)} />
-                <Label>Goal (/month)</Label>
-                <Input placeholder="Goal (times per day)"
-                type="number" min="1"
-                value={goal} onChange={(e) => setGoal(Number(e.target.value))} />
+                <Label>Goal (times/month)</Label>
+                <Input
+                    type="number"
+                    min="1"
+                    value={goalInput}
+                    onChange={(e) => setGoalInput(e.target.value)}
+                    onBlur={() => {
+                        const parsed = Math.max(Number(goalInput), 1); // 1以上を保証
+                        setGoal(parsed);
+                        setGoalInput(parsed.toString());
+                    }}
+                />
                 <div className="flex justify-between mt-4">
                     <Button variant="taskbotBlue"  onClick={() => onSave(title, goal)}>Save</Button>
-                    <Button variant="taskbotPink" onClick={onDelete}>Delete</Button>
+                    {habit && <Button variant="taskbotPink" onClick={onDelete}>Delete</Button>}
                 </div>
             </DialogContent>
         </Dialog>

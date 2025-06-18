@@ -23,6 +23,20 @@ export async function fetchHabits (
     }
 };
 
+export async function createHabit (title: string, goal: number, refetch: () => void) {
+    try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}habits`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, goal })
+        })
+        refetch()        
+    } catch (error) {
+        alert("Failed to create habit.");
+        console.error(error);
+    }
+}
+
 export async function updateHabit (habitId: number | undefined, title: string, goal: number, refetch: () => void) {
     try {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}habits/${habitId}`, {
