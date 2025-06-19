@@ -4,9 +4,10 @@ import { useRouter } from 'next/navigation';
 import NavBar from '@/components/NavBar';
 import Events from '@/components/Events';
 import Habits from '@/components/Habits';
-import Task from '@/components/Task';
-import { Event, Habit } from '../types/global';
+import Tasks from '@/components/Tasks';
+import { Event, Habit, Task } from '@/app/types/global';
 import { fetchHabits } from '../hooks/habit';
+import { fetchTasks } from '../hooks/task';
 
 
 
@@ -18,6 +19,9 @@ export default function Dashboard() {
     const [habits, setHabits] = useState<Habit[]>([])
     const [habitError, setHabitError] = useState<string | null>(null);
     const [habitLoading, setHabitLoading] = useState(true);
+    const [tasks, setTasks] = useState<Task[]>([])
+    const [taskError, setTaskError] = useState<string | null>(null);
+    const [taskLoading, setTaskLoading] = useState(true);
 
 
     // Fetch Events
@@ -61,9 +65,11 @@ export default function Dashboard() {
     useEffect(() => {
         fetchHabits(setHabits, setHabitError, setHabitLoading);
     }, []);
-    const refetchHabits = () => {
-        fetchHabits(setHabits, setHabitError, setHabitLoading);
-    }
+
+    // Fetch Tasks
+    useEffect(() => {
+        fetchTasks(setTasks, setTaskError, setTaskLoading);
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#F1F7F8] flex flex-col">
@@ -84,11 +90,16 @@ export default function Dashboard() {
                     habitLoading = {habitLoading}
                     habitError = {habitError}
                     habits = {habits}
-                    refetchHabits={refetchHabits}
+                    refetchHabits={() => fetchHabits(setHabits, setHabitError, setHabitLoading)}
                 />
 
                 {/* Task */}
-                <Task />
+                <Tasks 
+                    taskLoading = {taskLoading}
+                    taskError = {taskError}
+                    tasks = {tasks}
+                    refetchTasks={() => fetchTasks(setTasks, setTaskError, setTaskLoading)}
+                />
             </main>
         </div>
     );

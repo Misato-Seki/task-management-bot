@@ -15,3 +15,26 @@ export type Habit = {
     progress: number,
     hasLogToday: boolean
 }
+
+export type Task = {
+    id: number,
+    title: string,
+    description?: string,
+    deadline: string,
+    createdAt: string,
+    status: string,
+    userId?: number | null,
+    checklist?: Checklist[]
+}
+
+export type Checklist = {
+    id: number,
+    title: string,
+    description?: string,
+    deadline?: string,
+    priority: number,
+    completed: boolean,
+    completedAt?: string | null,
+    createdAt: string,
+    taskId: number
+}

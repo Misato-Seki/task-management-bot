@@ -18,9 +18,43 @@ const habitData: Prisma.HabitCreateInput[] = [
     }
 ]
 
+const taskData: Prisma.TaskCreateInput[] = [
+    {
+        title: "Plan Summer Trip",
+        description: "Book flights and hotels",
+        deadline: new Date("2025-06-25"),
+        status: "NOT_STARTED",
+        user: undefined,
+        checklist: {
+            create: [
+                { 
+                    title: "Book flights",
+                    description: "Find the best deals",
+                    deadline: new Date("2025-06-20"),
+                    priority: 1,
+                    completed: false,
+                    completedAt: null
+                },
+                {
+                    title: "Book hotels",
+                    description: "Choose a family-friendly hotel",
+                    deadline: new Date("2025-06-22"),
+                    priority: 2,
+                    completed: false,
+                    completedAt: null
+                }
+            ]
+
+        }
+    }
+]
+
 export async function main() {
     for (const habit of habitData) {
         await prisma.habit.create({ data:habit })
+    }
+    for (const task of taskData) {
+        await prisma.task.create({ data: task })
     }
 } 
 

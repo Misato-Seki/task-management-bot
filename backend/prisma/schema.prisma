@@ -19,17 +19,18 @@ model User {
   name  String
   email String @unique
   habits Habit[]
+  tasks Task[]
 }
 
 model Habit {
   id    Int    @id @default(autoincrement())
   title String
   goal  Int
-  createdAt DateTime
+  createdAt DateTime @default(now())
   archived Boolean
   userId Int?
   user User?    @relation(fields: [userId], references: [id])
-  logs HabitLog[]　@relation("HabitLogs")
+  logs HabitLog[] @relation("HabitLogs")
 }
 
 model HabitLog {
@@ -37,4 +38,36 @@ model HabitLog {
   date DateTime
   habitId Int
   habit Habit @relation("HabitLogs", fields: [habitId], references: [id], onDelete: Cascade)
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  REMINDER
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  title String
+  description String?
+  deadline DateTime?
+  createdAt DateTime @default(now())
+  status TaskStatus
+  userId Int?
+  user User? @relation(fields: [userId], references: [id])
+  checklist Checklist[] @relation("Task_Checklist") // Optional?
+}
+
+model Checklist {
+  id Int @id @default(autoincrement())
+  title String
+  description String?
+  deadline DateTime?
+  priority Int
+  completed Boolean
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  taskId Int
+  task Task @relation("Task_Checklist", fields: [taskId], references: [id], onDelete: Cascade)
 }

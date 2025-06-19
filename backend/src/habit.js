@@ -56,7 +56,6 @@ router.post('/habits', async(req, res) => {
             data: {
                 title,
                 goal,
-                createdAt: new Date(),
                 archived: false,
             }
         })
