@@ -25,7 +25,7 @@ export default function NavBar() {
                         <NavigationMenuLink href="/dashboard" className="text-white hover:text-[#5093B4] text-base font-medium">Dashboard</NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <NavigationMenuLink href="#" className="text-white hover:text-[#5093B4] text-base font-medium">Profile</NavigationMenuLink>
+                        <NavigationMenuLink href="/task" className="text-white hover:text-[#5093B4] text-base font-medium">Task</NavigationMenuLink>
                     </NavigationMenuItem>
                 </NavigationMenuList>
             </NavigationMenu>

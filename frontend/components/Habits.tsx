@@ -36,7 +36,7 @@ export default function Habits ({ habitLoading, habitError, habits, refetchHabit
                 ) : habitError ? (
                     <div className="text-red-500">{habitError}</div>
                 ) : habits.length === 0 ? (
-                    <div className="text-gray-500">No events for today.</div>
+                    <div className="text-gray-500">No planned habits for today.</div>
                 ) : (
                     habits.map(habit => (
                         <Card key={habit.id} onClick={() => openEditModal(habit)} className="cursor-pointer">
