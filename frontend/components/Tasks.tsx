@@ -3,6 +3,9 @@ import SectionCard from "./SectionCard"
 import Card from "./Card"
 import { Task } from "@/app/types/global";
 import { Button } from "./ui/button";
+import TaskEditModal from "./TaskEditDialog";
+import { useState } from "react";
+import { createTask, updateTask, deleteTask } from "@/app/hooks/task";
 
 type TasksProps = {
     taskLoading: boolean,
@@ -12,7 +15,15 @@ type TasksProps = {
 }
 
 
-export default function Tasks ({ taskLoading, taskError, tasks }: TasksProps) {
+export default function Tasks ({ taskLoading, taskError, tasks, refetchTasks }: TasksProps) {
+    const [ selectedTask, setSelectedTask ] = useState<Task | null>(null);
+    const [ dialogOpen, setDialogOpen ] = useState(false);
+    const [ addDialogOpen, setAddDialogOpen ] = useState(false);
+
+    const openEditModal = (task: Task) => {
+            setSelectedTask(task);
+            setDialogOpen(true);
+        }
     
     return (
         <>
@@ -25,7 +36,7 @@ export default function Tasks ({ taskLoading, taskError, tasks }: TasksProps) {
                     <div className="text-gray-500">No planned tasks for today.</div>
                 ) : (
                     tasks.map(task => (
-                        <Card key={task.id} className="cursor-pointer ">
+                        <Card key={task.id} onClick={() => openEditModal(task)} className="cursor-pointer ">
                             <div>
                                 {!task.checklist &&
                                 <input
@@ -60,8 +71,38 @@ export default function Tasks ({ taskLoading, taskError, tasks }: TasksProps) {
                         </Card>
                     ))
                 )}
-                <Button variant="taskbotBlue" onClick={() => console.log("button clicked")}>Add New Task</Button>
+                <Button variant="taskbotBlue" onClick={() => setAddDialogOpen(true)}>Add New Task</Button>
             </SectionCard>
+
+            {/* Add New Task Dialog */}
+            <TaskEditModal
+                task={null}
+                open={addDialogOpen}
+                onClose={() => setAddDialogOpen(false)}
+                onSave={async (task, checklist) => {
+                    if (!task) return;
+                    await createTask(task, checklist, refetchTasks);
+                    setAddDialogOpen(false);
+                }}
+                onDelete={() => {}}
+            />
+
+            {/* Edit/Delete Task Dialog */}
+            <TaskEditModal
+                task={selectedTask}
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+                onSave={async (task, checklist) => {
+                    if (!task) return;
+                    await updateTask(selectedTask?.id, task, checklist, refetchTasks);
+                    setDialogOpen(false);
+                }}
+                onDelete={async () => {
+                    if (!selectedTask) return;
+                    await deleteTask(selectedTask.id, refetchTasks);
+                    setDialogOpen(false);
+                }}
+            />
         </>
     )
 }
