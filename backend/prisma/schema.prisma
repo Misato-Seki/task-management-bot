@@ -54,6 +54,7 @@ model Task {
   deadline DateTime?
   createdAt DateTime @default(now())
   status TaskStatus
+  completed Boolean
   userId Int?
   user User? @relation(fields: [userId], references: [id])
   checklist Checklist[] @relation("Task_Checklist") // Optional?
@@ -64,9 +65,7 @@ model Checklist {
   title String
   description String?
   deadline DateTime?
-  priority Int
   completed Boolean
-  completedAt DateTime?
   createdAt DateTime @default(now())
   taskId Int
   task Task @relation("Task_Checklist", fields: [taskId], references: [id], onDelete: Cascade)

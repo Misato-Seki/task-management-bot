@@ -1,12 +1,27 @@
 import { Task, Checklist } from '../types/global';
-export async function fetchTasks(
+
+export async function fetchTasks () {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks`);
+        if (!res.ok) {
+            throw new Error('Failed to fetch Tasks');
+        }
+        const data = await res.json();
+        return Array.isArray(data.tasks) ? data.tasks : [];
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+        return [];
+    }
+}
+
+export async function fetchTodaysTasks(
     setTasks: (tasks: Task[]) => void,
     setTaskError: (error: string | null) => void, 
     setTaskLoading: (loading: boolean) => void
 ) {
     try {
         setTaskLoading(true)
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/today`);
         if (!res.ok) {
             setTaskError('Failed to fetch Tasks');
             setTaskLoading(false);
@@ -38,15 +53,9 @@ export async function createTask(
             throw new Error('Failed to create task');
         }
         refetch();
-        // debugging
-        console.log('Created task:', task);
-        console.log('Checklist:', checklist);
     } catch (error) {
         alert("Failed to create task.");
         console.error('Error creating task:', error);
-        // debugging
-        console.log('Created task:', task);
-        console.log('Checklist:', checklist);
     }
 }
 
@@ -89,4 +98,46 @@ export async function deleteTask (
         alert("Failed to delete task.");
         console.error('Error deleting task:', error);
     }
+}
+
+export async function updateTaskCompletion (
+  taskId: number | undefined,
+  completed: boolean,
+  refetch: () => void
+) {
+  if (!taskId) return;
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/${taskId}/completion`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed })
+    });
+    if (!response.ok) throw new Error('Failed to update task completion');
+    refetch();
+  } catch (error) {
+    alert('Failed to update task completion.');
+    console.error(error);
+  }
+}
+
+export async function updateChecklistCompletion (
+  checklistId: number | undefined,
+  completed: boolean,
+  refetch: () => void
+) {
+  if (!checklistId) return;
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}checklists/${checklistId}/completion`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed })
+    });
+    if (!response.ok) throw new Error('Failed to update checklist completion');
+    refetch();
+  } catch (error) {
+    alert('Failed to update checklist completion.');
+    console.error(error);
+  }
 }
