@@ -5,7 +5,7 @@ import { Task, Checklist } from "@/app/types/global";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type TaskEditModalProps = {
+type TaskEditDialogProps = {
     task: Task | null;
     open: boolean;
     onClose: () => void;
@@ -13,13 +13,13 @@ type TaskEditModalProps = {
     onDelete: () => void;
 }
                     
-export default function TaskEditModal({ task, open, onClose, onSave, onDelete }: TaskEditModalProps) {
+export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }: TaskEditDialogProps) {
     const [title, setTitle] = useState(task?.title || "");
     const [description, setDescription] = useState(task?.description || "");
     const [deadline, setDeadline] = useState(task?.deadline ? new Date(task.deadline) : new Date());
     const [status, setStatus] = useState(task?.status || "NOT_STARTED");
     const [checklist, setChecklist] = useState<Checklist[]>(task?.checklist || []);
-
+    const [editingIndex, setEditingIndex] = useState<number | null>(null)
 
 
     useEffect(() => {
@@ -36,6 +36,7 @@ export default function TaskEditModal({ task, open, onClose, onSave, onDelete }:
             setStatus(task.status || "NOT_STARTED");
             setChecklist(task.checklist || []);
         }
+        setEditingIndex(null)
     }, [task, open]);
 
     return (
@@ -70,7 +71,12 @@ export default function TaskEditModal({ task, open, onClose, onSave, onDelete }:
                 <Label className="mt-2">Checklist</Label>
                 <div className="flex flex-col gap-2">
                     {checklist.map((item, index) => (   
-                        <div key={item.id || index} className="flex flex-col items-left gap-2 w-full">
+                        <div 
+                            key={item.id || index} 
+                            className="flex flex-col items-left gap-2 w-full"
+                            onClick={() => setEditingIndex(index)}
+                            style={{ cursor: "pointer", background: editingIndex === index ? "#f0f4fa" : "transparent" }}
+                        >
                             <div className="flex items-center gap-2 w-full">
                                 <input
                                     type="checkbox"
@@ -81,6 +87,7 @@ export default function TaskEditModal({ task, open, onClose, onSave, onDelete }:
                                         setChecklist(newChecklist);
                                     }}
                                     className="accent-[#5093B4] w-5 h-5 rounded border-2 border-[#49454F]"
+                                    onClick={e => e.stopPropagation()}
                                 />                            
                                 <Input
                                     value={item.title}
@@ -90,43 +97,59 @@ export default function TaskEditModal({ task, open, onClose, onSave, onDelete }:
                                         setChecklist(newChecklist);
                                     }}
                                     placeholder="Checklist Item"
+                                    // onClick={e => e.stopPropagation()}
                                 />
                                 <Button 
                                     variant="taskbotPink" 
-                                    onClick={() => 
+                                    onClick={e => {                                    
+                                        e.stopPropagation()
                                         setChecklist(checklist.filter((_, i) => i !== index))
-                                    }
+                                    }}
                                 >
                                 ✕
                                 </Button>
                             </div>
-                            
-                                <Label className="mt-2">Deadline</Label>
-                                <Input
-                                    type="datetime-local"
-                                    value={item.deadline ? new Date(item.deadline).toISOString().slice(0, 16) : ""}// YYYY-MM-DDTHH:mm format
-                                    onChange={(e) => {
-                                        const newChecklist = [...checklist];
-                                        newChecklist[index].deadline = e.target.value ? new Date(e.target.value).toISOString() : undefined;
-                                        setChecklist(newChecklist);
-                                    }}
-                                />
 
-                                <Label className="mt-2">Priority</Label>
-                                <select
-                                    value={item.priority}
-                                    onChange={(e) => {
-                                        const newChecklist = [...checklist];
-                                        newChecklist[index].priority = parseInt(e.target.value, 10);
-                                        setChecklist(newChecklist);
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded"
-                                >
-                                    <option value="1">Low</option>
-                                    <option value="2">Medium</option>
-                                    <option value="3">High</option>
-                                </select>
-                            </div>
+                            {editingIndex === index && (
+                                <div className="pl-6 pt-2 flex flex-col gap-2">
+                                    <Label className="mt-2">Deadline</Label>
+                                    <Input
+                                        type="datetime-local"
+                                        value={item.deadline ? new Date(item.deadline).toISOString().slice(0, 16) : ""}// YYYY-MM-DDTHH:mm format
+                                        onChange={(e) => {
+                                            const newChecklist = [...checklist];
+                                            newChecklist[index].deadline = e.target.value ? new Date(e.target.value).toISOString() : undefined;
+                                            setChecklist(newChecklist);
+                                        }}
+                                    />
+
+                                    <Label className="mt-2">Priority</Label>
+                                    <select
+                                        value={item.priority}
+                                        onChange={(e) => {
+                                            const newChecklist = [...checklist];
+                                            newChecklist[index].priority = parseInt(e.target.value, 10);
+                                            setChecklist(newChecklist);
+                                        }}
+                                        className="w-full p-2 border border-gray-300 rounded"
+                                    >
+                                        <option value="1">Low</option>
+                                        <option value="2">Medium</option>
+                                        <option value="3">High</option>
+                                    </select>
+                                    <Button
+                                        className="mt-2 w-fit"
+                                        variant="outline"
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            setEditingIndex(null);
+                                        }}
+                                    >
+                                        Close
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </div>
                 <Button

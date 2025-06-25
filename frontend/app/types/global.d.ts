@@ -23,6 +23,7 @@ export type Task = {
     deadline: string,
     createdAt?: string,
     status: string,
+    completed: boolean,
     userId?: number | null,
     checklist?: Checklist[]
 }
@@ -32,9 +33,7 @@ export type Checklist = {
     title: string,
     description?: string,
     deadline?: string,
-    priority: number,
     completed: boolean,
-    completedAt?: string | null,
     createdAt?: string,
     taskId: number
 }
