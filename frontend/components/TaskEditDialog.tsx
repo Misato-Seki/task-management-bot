@@ -122,21 +122,6 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
                                             setChecklist(newChecklist);
                                         }}
                                     />
-
-                                    <Label className="mt-2">Priority</Label>
-                                    <select
-                                        value={item.priority}
-                                        onChange={(e) => {
-                                            const newChecklist = [...checklist];
-                                            newChecklist[index].priority = parseInt(e.target.value, 10);
-                                            setChecklist(newChecklist);
-                                        }}
-                                        className="w-full p-2 border border-gray-300 rounded"
-                                    >
-                                        <option value="1">Low</option>
-                                        <option value="2">Medium</option>
-                                        <option value="3">High</option>
-                                    </select>
                                     <Button
                                         className="mt-2 w-fit"
                                         variant="outline"
@@ -163,9 +148,7 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
                                 title: "",
                                 description: "",
                                 deadline: undefined,
-                                priority: 1,
                                 completed: false,
-                                completedAt: null,
                                 taskId: task?.id || 0,
                             },
                         ])
@@ -184,6 +167,7 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
                                     description,
                                     deadline: deadline.toISOString(),
                                     status,
+                                    completed: false,
                                     userId: task?.userId || null,
                                     checklist
                                 },
