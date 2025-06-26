@@ -17,7 +17,7 @@ export type Habit = {
 }
 
 export type Task = {
-    id: number,
+    id?: number,
     title: string,
     description?: string,
     deadline: string,
@@ -29,11 +29,11 @@ export type Task = {
 }
 
 export type Checklist = {
-    id: number,
+    id?: number,
     title: string,
     description?: string,
     deadline?: string,
     completed: boolean,
     createdAt?: string,
-    taskId: number
+    taskId?: number
 }

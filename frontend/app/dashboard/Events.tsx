@@ -1,5 +1,5 @@
-import SectionCard from "./SectionCard"
-import Card from "./Card"
+import SectionCard from "../../components/SectionCard"
+import Card from "../../components/Card"
 import { Event } from "@/app/types/global"
 
 type EventsProps = {

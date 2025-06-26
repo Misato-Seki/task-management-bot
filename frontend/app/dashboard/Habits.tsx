@@ -1,14 +1,14 @@
-import SectionCard from "./SectionCard";
-import Card from "./Card";
+import SectionCard from "../../components/SectionCard";
+import Card from "../../components/Card";
 import { logHabit, deleteHabitLog, createHabit, updateHabit, deleteHabit } from "@/app/hooks/habit";
 import { Habit } from "@/app/types/global";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
   } from "@/components/ui/tooltip"
-import HabitEditDialog from "./HabitEditDialog";
+import HabitEditDialog from "../../components/HabitEditDialog";
 import { useState } from "react";
 
 type HabitsProps = {
