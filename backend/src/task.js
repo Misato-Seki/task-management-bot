@@ -73,7 +73,7 @@ router.get('/tasks/today', async (req, res) => {
 
 
 router.post('/tasks', async (req, res) => {
-    const { title, description, deadline, status, checklist } = req.body;
+    const { title, description, deadline, status, checklist, completed } = req.body;
 
     try {
         const task = await prisma.task.create({
@@ -82,12 +82,12 @@ router.post('/tasks', async (req, res) => {
                 description,
                 deadline: deadline? new Date(deadline) : undefined,
                 status,
+                completed,
                 checklist: {
                     create: checklist.map(item => ({
                         title: item.title,
                         description: item.description,
                         deadline: new Date(item.deadline),
-                        priority: item.priority,
                         completed: item.completed,
                     }))
                 }

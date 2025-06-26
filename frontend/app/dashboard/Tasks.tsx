@@ -1,9 +1,9 @@
 // import { useEffect, useState } from "react"
-import SectionCard from "./SectionCard"
-import Card from "./Card"
+import SectionCard from "../../components/SectionCard"
+import Card from "../../components/Card"
 import { Task } from "@/app/types/global";
-import { Button } from "./ui/button";
-import TaskEditDialog from "./TaskEditDialog";
+import { Button } from "../../components/ui/button";
+import TaskEditDialog from "../../components/TaskEditDialog";
 import { useState } from "react";
 import { updateTask, deleteTask, updateTaskCompletion, updateChecklistCompletion } from "@/app/hooks/task";
 import { useRouter } from "next/navigation";

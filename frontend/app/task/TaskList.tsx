@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { format } from "date-fns"
-import { Task } from "../app/types/global"
+import { Task } from "../types/global"
 import { Clock3 } from 'lucide-react';
 
 type Props = {

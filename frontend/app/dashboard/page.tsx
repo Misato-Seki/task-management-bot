@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NavBar from '@/components/NavBar';
-import Events from '@/components/Events';
-import Habits from '@/components/Habits';
-import Tasks from '@/components/Tasks';
+import Events from '@/app/dashboard/Events';
+import Habits from '@/app/dashboard/Habits';
+import Tasks from '@/app/dashboard/Tasks';
 import { Event, Habit, Task } from '@/app/types/global';
 import { fetchHabits } from '../hooks/habit';
 import { fetchTodaysTasks } from '../hooks/task';

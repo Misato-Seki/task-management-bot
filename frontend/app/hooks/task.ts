@@ -1,16 +1,24 @@
 import { Task, Checklist } from '../types/global';
 
-export async function fetchTasks () {
+export async function fetchTasks (
+    setTasks: (tasks: Task[]) => void,
+    setTaskError: (error: string | null) => void, 
+    setTaskLoading: (loading: boolean) => void
+) {
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks`);
         if (!res.ok) {
-            throw new Error('Failed to fetch Tasks');
+            setTaskError('Failed to fetch Tasks');
+            setTaskLoading(false);
+            return;
         }
         const data = await res.json();
-        return Array.isArray(data.tasks) ? data.tasks : [];
-    } catch (error) {
-        console.error('Error fetching tasks:', error);
-        return [];
+        setTasks(Array.isArray(data.tasks) ? data.tasks : []);
+        setTaskError(null)
+    } catch {
+        setTaskError('Failed to fetch Tasks');
+    } finally {
+        setTaskLoading(false);
     }
 }
 
@@ -42,15 +50,33 @@ export async function createTask(
     checklist: Checklist[],
     refetch: () => void
 ) {
+    // Clean up checklist data
+    const cleanedChecklist = checklist.map(item => ({
+        title: item.title,
+        description: item.description,
+        deadline: item.deadline,
+        completed: item.completed
+    }))
+    // Clean up task data
+    const cleanedTask = {
+        title: task.title,
+        description: task.description,
+        deadline: task.deadline,
+        status: task.status,
+        completed: task.completed,
+        checklist: cleanedChecklist
+    }
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...task, checklist })
+            body: JSON.stringify({ ...cleanedTask })
         });
 
         if (!response.ok) {
-            throw new Error('Failed to create task');
+            const errorData = await response.json();
+            console.error('Server error:', errorData);
+            throw new Error(errorData.error || 'Failed to create task');
         }
         refetch();
     } catch (error) {
