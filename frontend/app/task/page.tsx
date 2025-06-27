@@ -36,7 +36,10 @@ export default function Task() {
           ) : tasks.length === 0 ? (
             <div className="text-gray-500">No tasks.</div>
           ) : (
-            <TaskList tasks={tasks}/>
+            <TaskList
+              tasks={tasks}
+              refetchTasks={() => fetchTasks(setTasks, setTaskError, setTaskLoading)}
+            />
           )}
         </div>
       </div>

@@ -14,11 +14,31 @@ const nextWeek = toZonedTime(endOfDay(addDays(new Date(), 7)), timezone);
 router.get('/tasks', async (req, res) => {
     try {
         const tasks = await prisma.task.findMany({
-            include: {
-                checklist: true
-            },
+          orderBy: {
+            deadline: 'asc'
+          },
+          include: {
+              checklist: {
+                orderBy: {
+                  deadline: 'asc'
+                }
+              }
+          },
         })
-        return res.json({ tasks });
+
+        const taskWithProgress = tasks.map(task => {
+          const completedChecklistItems = task.checklist.filter(item => item.completed);
+          const totalChecklistItems = task.checklist.length;
+          const progress = totalChecklistItems === 0 ? 0 : (completedChecklistItems.length / totalChecklistItems) * 100;
+          return {
+            ...task,
+            progress,
+            checklistCount: totalChecklistItems,
+            completedCount: completedChecklistItems.length
+          };
+        })
+
+        return res.json({ tasks: taskWithProgress });
     } catch (error) {
         res.status(500).json({ error: error.message });   
     }
@@ -27,11 +47,13 @@ router.get('/tasks', async (req, res) => {
 router.get('/tasks/today', async (req, res) => {
   try {
     const tasks = await prisma.task.findMany({
+      orderBy: {
+        deadline: 'asc'
+      },
       where: {
         OR: [
           {
             deadline: {
-              gte: today,
               lte: nextWeek,
             },
           },
@@ -39,9 +61,8 @@ router.get('/tasks/today', async (req, res) => {
             checklist: {
               some: {
                 deadline: {
-                  gte: today,
                   lte: nextWeek,
-                },
+                }
               },
             },
           },
@@ -57,19 +78,60 @@ router.get('/tasks/today', async (req, res) => {
         checklist: {
           where: {
             deadline: {
-              gte: today,
               lte: nextWeek,
-            },
+            }
           },
+          orderBy: {
+            deadline: 'asc'
+          }
         },
       },
     });
 
-    res.json({ tasks });
+    const taskWithProgress = tasks.map(task => {
+      const completedChecklistItems = task.checklist.filter(item => item.completed);
+      const totalChecklistItems = task.checklist.length;
+      const progress = totalChecklistItems === 0 ? 0 : (completedChecklistItems.length / totalChecklistItems) * 100;
+      return {
+        ...task,
+        progress,
+        checklistCount: task.checklist.length,
+        completedCount: task.checklist.filter(item => item.completed).length
+      };
+    })
+
+    res.json({ tasks: taskWithProgress });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.get('/tasks/:id', async (req, res) => {
+    const taskId = Number(req.params.id);
+    try {
+        const task = await prisma.task.findUnique({
+            where: {
+                id: taskId
+            },
+            include: {
+                checklist: {
+                  orderBy: {
+                    deadline: 'asc'
+                  }
+                }
+            },
+        })
+        const taskWithProgress = {
+          ...task,
+          progress: task.checklist.length === 0 ? 0 : (task.checklist.filter(item => item.completed).length / task.checklist.length) * 100,
+          checklistCount: task.checklist.length,
+          completedCount: task.checklist.filter(item => item.completed).length
+        }
+        res.json(taskWithProgress);        
+    } catch (error) {
+        res.status(500).json({ error: error.message });        
+    }
+})
 
 
 router.post('/tasks', async (req, res) => {
@@ -165,14 +227,26 @@ router.patch('/tasks/:id/completion', async (req, res) => {
     // 1. Taskのcompleted更新
     const updatedTask = await prisma.task.update({
       where: { id: taskId },
-      data: { completed }
+      data: { 
+        completed,
+        ...(completed ? {status: "COMPLETED"} : {status: "REMINDER"})
+      },
+      include: { checklist: true }
     });
 
     // 2. Checklistも全て同じ状態に更新
     await prisma.checklist.updateMany({
       where: { taskId },
-      data: { completed }
+      data: { completed },
     });
+
+    // 3. checklistを再取得して正しい状態で返す（更新後の状態が必要なため）
+    const updatedChecklist = await prisma.checklist.findMany({
+      where: { taskId },
+    });
+
+    // 4. updatedTask に正しい checklist を上書き（更新後状態で上書き）
+    updatedTask.checklist = updatedChecklist;
 
     res.json(updatedTask);
   } catch (error) {
@@ -191,7 +265,7 @@ router.patch('/checklists/:id/completion', async (req, res) => {
 
   try {
     // 1. Checklist更新
-    const updatedChecklist = await prisma.checklist.update({
+    const updatedChecklistItem = await prisma.checklist.update({
       where: { id: checklistId },
       data: { completed }
     });
@@ -204,7 +278,8 @@ router.patch('/checklists/:id/completion', async (req, res) => {
 
     // 3. 親TaskのChecklist全件取得
     const allChecklist = await prisma.checklist.findMany({
-      where: { taskId: checklistItem.taskId }
+      where: { taskId: checklistItem.taskId },
+      orderBy: { deadline: 'asc' }
     });
 
     // 4. 全て完了ならTask.completed=true, そうでなければfalse
@@ -213,7 +288,19 @@ router.patch('/checklists/:id/completion', async (req, res) => {
       where: { id: checklistItem.taskId },
       data: { completed: allCompleted }
     });
-    res.json(updatedChecklist);
+
+    // 5. チェックリストの進捗状況を返す
+    const progress = allChecklist.length === 0 ? 0 : (allChecklist.filter(item => item.completed).length / allChecklist.length) * 100;
+    const checklistCount = allChecklist.length;
+    const completedCount = allChecklist.filter(item => item.completed).length;
+
+    res.json({
+      updatedChecklistItem,
+      updatedChecklist: allChecklist,
+      progress, 
+      checklistCount, 
+      completedCount
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

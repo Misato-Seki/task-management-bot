@@ -26,6 +26,9 @@ export type Task = {
     completed: boolean,
     userId?: number | null,
     checklist?: Checklist[]
+    progress?: number
+    completedCount?: number
+    checklistCount?: number
 }
 
 export type Checklist = {
