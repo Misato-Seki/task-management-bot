@@ -9,13 +9,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ChevronDownIcon, Clock, AlignLeft, CircleCheckBig, ListTodo } from "lucide-react"
+import { ChevronDownIcon, Clock, AlignLeft, CircleCheckBig, ListTodo, Trash2 } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns"
+import { updateChecklistCompletion, updateTaskCompletion } from "@/app/hooks/task";
 
 
 type TaskEditDialogProps = {
@@ -31,9 +34,13 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
     const [description, setDescription] = useState(task?.description || "");
     const [deadline, setDeadline] = useState(task?.deadline ? new Date(task.deadline) : new Date());
     const [status, setStatus] = useState(task?.status || "NOT_STARTED");
+    const [completed, setCompleted] = useState(task?.completed || false)
+    const [progress, setProgress] = useState<number | undefined>(0)
+    const [checklistCount, setChecklistCount] = useState<number | undefined>(0)
+    const [completedCount, setCompletedCount] = useState<number | undefined>(0)
     const [checklist, setChecklist] = useState<Checklist[]>(task?.checklist || []);
-    const [editingIndex, setEditingIndex] = useState<number | null>(null)
     const [datePickerOpen, setDatePickerOpen] = useState(false)
+    const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null)
 
 
     useEffect(() => {
@@ -42,30 +49,50 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
             setDescription("");
             setDeadline(new Date());
             setStatus("NOT_STARTED");
-            setChecklist([]);            
+            setCompleted(false)
+            setChecklist([]); 
+            setChecklistCount(0)
+            setCompletedCount(0)
+            setProgress(0)         
         } else {
             setTitle(task.title);
             setDescription(task.description || "");
             setDeadline(task.deadline ? new Date(task.deadline) : new Date());
             setStatus(task.status || "NOT_STARTED");
+            setCompleted(task.completed || false)
             setChecklist(task.checklist || []);
+            setChecklistCount(task.checklistCount)
+            setCompletedCount(task.completedCount)
+            setProgress(task.progress) 
         }
-        setEditingIndex(null)
+        // setEditingIndex(null)
     }, [task, open]);
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent>
+            <DialogContent className="h-4/5 overflow-y-auto">
                 {/* Title */}
                 <DialogHeader>
                     <DialogTitle className="flex flex-row items-center gap-3">
                         <Tooltip>
                             <TooltipTrigger>
-                                <input
+                                <Input
                                     type="checkbox"
-                                    checked={false}
+                                    checked={completed}
                                     onClick={(e) => e.stopPropagation()}
-                                    onChange={() => {}}
+                                    onChange={async () => {
+                                        if (task) {
+                                            const newCompleted = !completed;
+                                            try {
+                                                const updatedTask = await updateTaskCompletion(task.id, newCompleted, () => {});
+                                                setCompleted(newCompleted);
+                                                setStatus(updatedTask.status)
+                                                setChecklist(updatedTask.checklist)
+                                            } catch (error) {
+                                                console.error("Failed to update task completion", error)
+                                            }                                            
+                                        }
+                                    }}
                                     className="accent-[#5093B4] w-5 h-5 rounded border-2 border-[#49454F]"
                                 />
                             </TooltipTrigger>
@@ -129,22 +156,41 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
                 {/* Checklist */}
                 <div className="flex flex-col gap-3">
                     <Label htmlFor="checklist" className="mt-2"><ListTodo size={20}/>Checklist</Label>
+                    {/* Progress Bar */}
+                    <div className="flex items-center gap-2 mt-2">
+                        <span className="text-sm text-[#5093B4]">{completedCount}/{checklistCount}</span>
+                        <div className="w-full h-3 bg-[#F1F7F8] rounded">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div className="h-3 bg-[#5093B4] rounded" style={{ width: `${progress}%` }} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{progress && Math.round(progress)}%</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
+                    </div>
                     <div className="flex flex-col gap-2">
                         {checklist.map((item, index) => (   
                             <div 
                                 key={item.id || index} 
                                 className="flex flex-col items-left gap-2 w-full"
-                                onClick={() => setEditingIndex(index)}
-                                style={{ cursor: "pointer", background: editingIndex === index ? "#f0f4fa" : "transparent" }}
                             >
                                 <div className="flex items-center gap-2 w-full">
                                     <input
                                         type="checkbox"
                                         checked={item.completed}
-                                        onChange={() => {
-                                            const newChecklist = [...checklist];
-                                            newChecklist[index].completed = !newChecklist[index].completed;
-                                            setChecklist(newChecklist);
+                                        onChange={async() => {
+                                            try {
+                                                const res = await updateChecklistCompletion(checklist[index].id, !checklist[index].completed, () => {})
+                                                setChecklist(res.updatedChecklist)
+                                                setProgress(res.progress)
+                                                setChecklistCount(res.checklistCount)
+                                                setCompletedCount(res.completedCount)
+                                                
+                                            } catch (error) {
+                                                console.error(error)
+                                            }
                                         }}
                                         className="accent-[#5093B4] w-5 h-5 rounded border-2 border-[#49454F]"
                                         onClick={e => e.stopPropagation()}
@@ -158,41 +204,40 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
                                         }}
                                         placeholder="Checklist Item"
                                     />
-                                    <Button 
-                                        variant="taskbotPink" 
+                                    <Popover 
+                                        open={openPopoverIndex === index} 
+                                        onOpenChange={(open) => setOpenPopoverIndex(open ? index : null)}
+                                    >
+                                        <PopoverTrigger asChild>
+                                            <Badge variant="outline">
+                                                <Clock/>{item.deadline ? format(new Date(item.deadline), "MM/dd") : "-"}
+                                            </Badge>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                            <Calendar
+                                            mode="single"
+                                            selected={item.deadline ? new Date(item.deadline) : undefined}
+                                            captionLayout="dropdown"
+                                            onSelect={(date) => {
+                                                
+                                                    const newChecklist = [...checklist];
+                                                    newChecklist[index].deadline = date ? new Date(date).toISOString() : undefined;
+                                                    setChecklist(newChecklist);                                                    
+                                                    setOpenPopoverIndex(null)
+                                                
+                                            }}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <div 
                                         onClick={e => {                                    
                                             e.stopPropagation()
                                             setChecklist(checklist.filter((_, i) => i !== index))
                                         }}
                                     >
-                                    ✕
-                                    </Button>
-                                </div>
-
-                                {editingIndex === index && (
-                                    <div className="pl-6 pt-2 flex flex-col gap-2">
-                                        <Label className="mt-2">Deadline</Label>
-                                        <Input
-                                            type="datetime-local"
-                                            value={item.deadline ? new Date(item.deadline).toISOString().slice(0, 16) : ""}// YYYY-MM-DDTHH:mm format
-                                            onChange={(e) => {
-                                                const newChecklist = [...checklist];
-                                                newChecklist[index].deadline = e.target.value ? new Date(e.target.value).toISOString() : undefined;
-                                                setChecklist(newChecklist);
-                                            }}
-                                        />
-                                        <Button
-                                            className="mt-2 w-fit"
-                                            variant="outline"
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                setEditingIndex(null);
-                                            }}
-                                        >
-                                            Close
-                                        </Button>
+                                        <Trash2 color="#F66164"/>
                                     </div>
-                                )}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -205,7 +250,6 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
                         setChecklist([
                             ...checklist,
                             {
-                                // id: 0,
                                 title: "",
                                 description: "",
                                 deadline: undefined,
@@ -229,7 +273,7 @@ export default function TaskEditDialog({ task, open, onClose, onSave, onDelete }
                                     description,
                                     deadline: deadline.toISOString(),
                                     status,
-                                    completed: false,
+                                    completed,
                                     userId: task?.userId || null,
                                     checklist
                                 },

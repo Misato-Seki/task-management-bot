@@ -45,6 +45,19 @@ export async function fetchTodaysTasks(
     }
 };
 
+export async function fetchTaskById(taskId: number | undefined) {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/${taskId}`);
+        if (!res.ok) {
+            throw new Error('Failed to fetch Task');
+        }
+        const data = await res.json();
+        return data
+    } catch {
+        throw new Error('Failed to fetch Task');
+    }
+}
+
 export async function createTask(
     task: Task,
     checklist: Checklist[],
@@ -140,7 +153,9 @@ export async function updateTaskCompletion (
       body: JSON.stringify({ completed })
     });
     if (!response.ok) throw new Error('Failed to update task completion');
+    const updateTask = await response.json();
     refetch();
+    return updateTask
   } catch (error) {
     alert('Failed to update task completion.');
     console.error(error);
@@ -162,6 +177,7 @@ export async function updateChecklistCompletion (
     });
     if (!response.ok) throw new Error('Failed to update checklist completion');
     refetch();
+    return response.json()
   } catch (error) {
     alert('Failed to update checklist completion.');
     console.error(error);
