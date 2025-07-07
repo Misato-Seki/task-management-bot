@@ -22,6 +22,10 @@ jobs:
             echo "BASE_FRONTEND_URL=https://taskbot.misatosan.com" >> backend/.env
             echo "DATABASE_URL=postgres://user:password@db:5432/mydb" >> backend/.env
             echo "GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}" >> backend/.env
+            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" >> backend/.env
+            echo "CHANNEL_ID=${{ secrets.CHANNEL_ID }}" >> backend/.env
+            echo "API_URL=${{ secrets.API_URL }}" >> backend/.env
+
 
         - name: Create frontend .env file
           run: |

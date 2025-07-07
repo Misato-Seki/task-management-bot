@@ -62,7 +62,7 @@ router.get('/tasks/today', async (req, res) => {
               some: {
                 deadline: {
                   lte: nextWeek,
-                }
+                },
               },
             },
           },
@@ -79,7 +79,8 @@ router.get('/tasks/today', async (req, res) => {
           where: {
             deadline: {
               lte: nextWeek,
-            }
+            },
+            completed: false
           },
           orderBy: {
             deadline: 'asc'
