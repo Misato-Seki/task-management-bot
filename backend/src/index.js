@@ -7,9 +7,20 @@ const authRoutes = require('./auth');
 const calendarRoutes = require('./calendar');
 const habitRoutes = require('./habit')
 const taskRoutes = require('./task');
+const cron = require('node-cron');
 
 const app = express();
 const prisma = new PrismaClient();
+
+// node-cronで毎月1日0時にHabitLogを全削除
+cron.schedule('0 0 8 * *', async () => {
+  try {
+    const deleted = await prisma.habitLog.deleteMany({});
+    console.log(`Deleted ${deleted.count} habit logs`);
+  } catch (error) {
+    console.error('[CRON] Failed to delete habit logs:', error);
+  }
+});
 
 app.use(express.json());
 
