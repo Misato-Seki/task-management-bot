@@ -13,13 +13,15 @@ const app = express();
 const prisma = new PrismaClient();
 
 // node-cronで毎月1日0時にHabitLogを全削除
-cron.schedule('0 0 8 * *', async () => {
+cron.schedule('20 17 7 * *', async () => {
   try {
     const deleted = await prisma.habitLog.deleteMany({});
     console.log(`Deleted ${deleted.count} habit logs`);
   } catch (error) {
     console.error('[CRON] Failed to delete habit logs:', error);
   }
+},{
+  timezone: 'Europe/Helsinki'
 });
 
 app.use(express.json());
