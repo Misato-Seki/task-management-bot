@@ -16,7 +16,9 @@ passport.deserializeUser((obj, done) => done(null, obj));
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    accessType: 'offline',
+    prompt: 'consent'
   },
   function(accessToken, refreshToken, profile, done) {
     const email = profile.emails[0].value;
@@ -25,6 +27,8 @@ passport.use(new GoogleStrategy({
     }
     // accessTokenをprofileオブジェクトに含めておく
     profile.accessToken = accessToken;
+    profile.refreshToken = refreshToken;
+
     return done(null, profile);
   }
 ));
@@ -32,7 +36,9 @@ passport.use(new GoogleStrategy({
 // When someone visits /auth/google, they start the Google login process
 router.get('/auth/google',
   passport.authenticate('google', {
-    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar.readonly'] // カレンダー読み取り権限を追加
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar.readonly'], // カレンダー読み取り権限を追加
+    accessType: 'offline',
+    prompt: 'consent'
   })
 );
 
@@ -43,6 +49,9 @@ router.get('/auth/google/callback',
     // 認証後、accessTokenをセッションに保存
     if (req.user && req.user.accessToken) {
       req.session.accessToken = req.user.accessToken;
+      if (req.user.refreshToken) {
+        require('fs').writeFileSync('refreshToken.json', JSON.stringify({ refresh_token: req.user.refreshToken }))
+      }
     }
     res.redirect(`${BASE_FRONTEND_URL}/dashboard`);
   }
