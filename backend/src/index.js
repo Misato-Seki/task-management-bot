@@ -13,7 +13,7 @@ const app = express();
 const prisma = new PrismaClient();
 
 // node-cronで毎月1日0時にHabitLogを全削除
-cron.schedule('20 17 7 * *', async () => {
+cron.schedule('0 0 1 * *', async () => {
   try {
     const deleted = await prisma.habitLog.deleteMany({});
     console.log(`Deleted ${deleted.count} habit logs`);
