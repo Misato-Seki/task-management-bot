@@ -6,3 +6,5 @@ npx prisma migrate deploy
 echo "Starting the application..."
 node src/index.js
 
+echo "Set Discord Bot..."
+node src/bot.js
