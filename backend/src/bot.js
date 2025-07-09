@@ -3,6 +3,7 @@ const { Client, Events, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
 const dotenv = require('dotenv');
 const { format } = require('date-fns')
+const { getAccessTokenFromRefreshToken } = require('./token')
 
 dotenv.config();
 
@@ -20,7 +21,23 @@ async function sendBotMessage() {
     const habits = await fetch(`${process.env.API_URL}/habits`).then(res => res.json());
     const tasks = await fetch(`${process.env.API_URL}/tasks/today`).then(res => res.json());
 
-    let habitMessage = '## Habits:\n'
+    const accessToken = await getAccessTokenFromRefreshToken()
+    const events = await fetch(`${process.env.API_URL}/calendar/today`, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    }).then(res => res.json())
+
+    let eventMessage = '## Events:\n'
+    if(events.length === 0) {
+        eventMessage += '- No events for today.\n'
+    } else {
+        eventMessage += events.map(event => {
+            const start = event.start.dateTime || event.start.date;
+            return `- ${event.summary} (${format(new Date(start), "HH:mm")})`;
+          }).join('\n');
+    }
+    let habitMessage = '\n## Habits:\n'
     habitMessage += habits.map(habit => `- ${habit.title} (Progress: ${habit.logCount}/${habit.goal})`).join('\n')
     let taskMessage = '\n## Tasks:\n'
     tasks.tasks.forEach(task => {
@@ -33,7 +50,7 @@ async function sendBotMessage() {
 
     })
 
-    const message = `# 📋${format(new Date(), "MMM dd (EEE)")}\n` + habitMessage + taskMessage;
+    const message = `# 📋${format(new Date(), "MMM dd (EEE)")}\n` + eventMessage + habitMessage + taskMessage;
     const channel = client.channels.cache.get(CHANNEL_ID);
     channel.send(message);
 }
