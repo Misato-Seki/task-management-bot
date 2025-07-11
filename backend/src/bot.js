@@ -58,6 +58,9 @@ async function sendBotMessage() {
 client.once(Events.ClientReady, async readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 
+    // テスト送信: Bot起動時に1度だけ送信
+    sendBotMessage();
+
     cron.schedule('0 6 * * *', () => {
         sendBotMessage();
     },{
