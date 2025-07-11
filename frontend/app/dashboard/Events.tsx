@@ -13,7 +13,7 @@ export default function Events ({eventLoading, eventError, events}: EventsProps)
         if (!dateTimeStr) return null
 
         const date = new Date(dateTimeStr || '')
-        return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+        return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hour12: false})
 
     }
     return (
