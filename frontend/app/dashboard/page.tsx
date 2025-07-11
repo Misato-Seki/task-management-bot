@@ -72,11 +72,11 @@ export default function Dashboard() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#F1F7F8] flex flex-col">
+        <div className="min-h-screen w-full bg-[#F1F7F8] flex flex-col">
             <NavBar />
 
             {/* Main Content */}
-            <main className="flex-1 flex justify-center items-start gap-12 px-8 py-10">
+            <main className="grid grid-cols-1 md:grid-cols-3 justify-center items-start gap-12 px-8 py-10">
 
                 {/* Events */}
                 <Events 

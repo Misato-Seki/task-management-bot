@@ -34,7 +34,7 @@ async function sendBotMessage() {
     } else {
         eventMessage += events.map(event => {
             const start = event.start.dateTime || event.start.date;
-            return `- ${event.summary} (${format(new Date(start), "HH:mm")})`;
+            return `- ${event.summary} (${format(new Date(start), "HH:mm", { timeZone: 'Europe/Helsinki' })})`;
           }).join('\n');
     }
     let habitMessage = '\n## Habits:\n'
@@ -58,7 +58,7 @@ async function sendBotMessage() {
 client.once(Events.ClientReady, async readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 
-    // テスト送信: Bot起動時に1度だけ送信
+    //テスト送信: Bot起動時に1度だけ送信
     sendBotMessage();
 
     cron.schedule('0 6 * * *', () => {
