@@ -61,9 +61,6 @@ export default function Dashboard() {
             });
     }, [router]);
 
-    //debug
-    console.log("Fetched events data: ", events)
-
     // Fetch Habits
     useEffect(() => {
         fetchHabits(setHabits, setHabitError, setHabitLoading);
