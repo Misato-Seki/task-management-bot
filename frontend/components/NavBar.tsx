@@ -3,20 +3,30 @@ import {
     NavigationMenuList,
     NavigationMenuItem,
     NavigationMenuLink,
+    NavigationMenuTrigger,
+    NavigationMenuContent
 } from "@/components/ui/navigation-menu"
+import { Menu } from 'lucide-react';
+import Link from "next/link";
+
 
 export default function NavBar() {
     return (
         <nav
-            className="w-full flex items-center justify-between bg-[#5093B4] px-[20px] py-[10px]"
+            className="relative flex items-center justify-between bg-[#5093B4] px-[20px] py-[10px]"
             style={{ minHeight: 44 }}
         >
-            <span
-                className="text-white font-semibold text-[24px] leading-[1.2] tracking-[-0.02em] font-inter"
-            >
-                TaskBot
-            </span>
-            <NavigationMenu viewport={false}>
+            {/* Logo */}
+            <Link href='/' className="">
+                <span
+                    className="text-white font-semibold text-[24px] leading-[1.2] tracking-[-0.02em] font-inter"
+                >
+                    TaskBot
+                </span>
+            </Link>
+
+            {/* Desktop Menu */}
+            <NavigationMenu viewport={false} className="hidden md:flex">
                 <NavigationMenuList className="gap-[30px]">
                     <NavigationMenuItem>
                         <NavigationMenuLink href="/" className="text-white hover:text-[#5093B4] text-base font-medium">Home</NavigationMenuLink>
@@ -28,6 +38,25 @@ export default function NavBar() {
                         <NavigationMenuLink href="/task" className="text-white hover:text-[#5093B4] text-base font-medium">Task</NavigationMenuLink>
                     </NavigationMenuItem>
                 </NavigationMenuList>
+            </NavigationMenu>
+
+            {/* Mobile Menu */}
+            <NavigationMenu className="flex md:hidden">
+                <NavigationMenuList>
+                    <NavigationMenuItem>
+                        <NavigationMenuTrigger className="bg-[#5093B4]">
+                            <Menu color="white"/>
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent className="">
+                            <NavigationMenuLink href="/" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Home</NavigationMenuLink>
+                            <NavigationMenuLink href="/dashboard" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Dashboard</NavigationMenuLink>
+                            <NavigationMenuLink href="/task" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Task</NavigationMenuLink>
+                        </NavigationMenuContent>
+
+                    </NavigationMenuItem>
+                    
+                </NavigationMenuList>
+
             </NavigationMenu>
         </nav>
     )

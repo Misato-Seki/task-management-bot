@@ -23,7 +23,7 @@ export default function Task() {
     <>
       <div className="min-h-screen bg-[#F1F7F8] flex flex-col">
         <NavBar />
-        <div className="container mx-auto py-10">
+        <div className="container px-5 md:px-0 md:mx-auto py-10">
           <Button
             variant="taskbotBlue"
             className="mb-10"

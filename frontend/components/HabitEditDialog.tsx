@@ -23,6 +23,7 @@ export default function HabitEditModal({ habit, open, onClose, onSave, onDelete 
         if (habit) {
             setTitle(habit.title);
             setGoal(habit.goal);
+            setGoalInput(habit.goal.toString())
         }
     }, [habit]);
 

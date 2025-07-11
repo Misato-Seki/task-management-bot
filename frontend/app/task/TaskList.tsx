@@ -23,14 +23,14 @@ export const TaskList = ({ tasks, refetchTasks }: Props) => {
     setDialogOpen(true)
   }
   return (
-    <>
-      <Accordion type="multiple" className="grid grid-cols-3 gap-4">
+    <div className="">
+      <Accordion type="multiple" className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {tasks.map((task) => (
           <AccordionItem value={`task-${task.id}`} key={task.id}>
             <Card className="w-full h-full">
               <CardHeader className="flex flex-row justify-between items-center cursor-pointer" onClick={() => openEditModal(task)}>
-                <CardTitle className="text-xl">{task.title}</CardTitle>
-                <div className="flex items-center gap-3">
+                <CardTitle className="text-xl mr-3">{task.title}</CardTitle>
+                <div className="flex flex-wrap items-center gap-3">
                   <Badge variant="outline">
                       <Clock3/>{task.deadline ? format(new Date(task.deadline), "MM/dd") : "-"}
                     </Badge>
@@ -101,7 +101,7 @@ export const TaskList = ({ tasks, refetchTasks }: Props) => {
         }
         }
       />
-    </>
+    </div>
 
   )
 }
