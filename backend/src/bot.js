@@ -19,8 +19,13 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 // It makes some properties non-nullable.
 
 async function sendBotMessage() {
-    const habits = await fetch(`${process.env.API_URL}/habits`).then(res => res.json());
-    const tasks = await fetch(`${process.env.API_URL}/tasks/today`).then(res => res.json());
+    const habits = await fetch(`${process.env.API_URL}/habits`, {
+        headers: { 'x-api-key': process.env.BOT_API_KEY }
+    }).then(res => res.json());
+
+    const tasks = await fetch(`${process.env.API_URL}/tasks/today`, {
+        headers: { 'x-api-key': process.env.BOT_API_KEY }
+    }).then(res => res.json());
 
     const accessToken = await getAccessTokenFromRefreshToken()
     const events = await fetch(`${process.env.API_URL}/calendar/today`, {

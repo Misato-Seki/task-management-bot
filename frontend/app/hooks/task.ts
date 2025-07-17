@@ -6,7 +6,9 @@ export async function fetchTasks (
     setTaskLoading: (loading: boolean) => void
 ) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks`, {
+            credentials: 'include',
+        });
         if (!res.ok) {
             setTaskError('Failed to fetch Tasks');
             setTaskLoading(false);
@@ -29,7 +31,9 @@ export async function fetchTodaysTasks(
 ) {
     try {
         setTaskLoading(true)
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/today`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/today`, {
+            credentials: 'include',
+        });
         if (!res.ok) {
             setTaskError('Failed to fetch Tasks');
             setTaskLoading(false);
@@ -47,7 +51,9 @@ export async function fetchTodaysTasks(
 
 export async function fetchTaskById(taskId: number | undefined) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/${taskId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/${taskId}`, {
+            credentials: 'include',
+        });
         if (!res.ok) {
             throw new Error('Failed to fetch Task');
         }
@@ -83,7 +89,8 @@ export async function createTask(
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...cleanedTask })
+            body: JSON.stringify({ ...cleanedTask }),
+            credentials: 'include',
         });
 
         if (!response.ok) {
@@ -108,7 +115,8 @@ export async function updateTask (
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/${taskId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ taskId, ...tasks, checklist  })
+            body: JSON.stringify({ taskId, ...tasks, checklist  }),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Failed to update task');
@@ -127,7 +135,8 @@ export async function deleteTask (
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/${taskId}`, {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Failed to delete task');
@@ -150,7 +159,8 @@ export async function updateTaskCompletion (
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}tasks/${taskId}/completion`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed })
+      body: JSON.stringify({ completed }),
+      credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to update task completion');
     const updateTask = await response.json();
@@ -173,7 +183,8 @@ export async function updateChecklistCompletion (
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}checklists/${checklistId}/completion`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed })
+      body: JSON.stringify({ completed }),
+      credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to update checklist completion');
     refetch();

@@ -2,16 +2,16 @@ const express = require('express')
 const { PrismaClient } = require('../generated/prisma')
 const { toZonedTime } = require('date-fns-tz');
 const { startOfDay, endOfDay, addDays } = require('date-fns');
+const ensureAuthenticated = require('./middleware')
 
 
 const router = express.Router();
 const prisma = new PrismaClient()
 
 const timezone = 'Europe/Helsinki';
-const today = toZonedTime(startOfDay(new Date()), timezone);
 const nextWeek = toZonedTime(endOfDay(addDays(new Date(), 7)), timezone);
 
-router.get('/tasks', async (req, res) => {
+router.get('/tasks', ensureAuthenticated, async (req, res) => {
     try {
         const tasks = await prisma.task.findMany({
           orderBy: {
@@ -44,7 +44,7 @@ router.get('/tasks', async (req, res) => {
     }
 })
 
-router.get('/tasks/today', async (req, res) => {
+router.get('/tasks/today', ensureAuthenticated, async (req, res) => {
   try {
     const tasks = await prisma.task.findMany({
       orderBy: {
@@ -107,7 +107,7 @@ router.get('/tasks/today', async (req, res) => {
   }
 });
 
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', ensureAuthenticated, async (req, res) => {
     const taskId = Number(req.params.id);
     try {
         const task = await prisma.task.findUnique({
@@ -135,7 +135,7 @@ router.get('/tasks/:id', async (req, res) => {
 })
 
 
-router.post('/tasks', async (req, res) => {
+router.post('/tasks', ensureAuthenticated, async (req, res) => {
     const { title, description, deadline, status, checklist, completed } = req.body;
 
     try {
@@ -165,7 +165,7 @@ router.post('/tasks', async (req, res) => {
     }
 })
 
-router.put('/tasks/:id', async (req, res) => {
+router.put('/tasks/:id', ensureAuthenticated, async (req, res) => {
     const taskId = Number(req.params.id);
     const { title, description, deadline, status, checklist } = req.body;
 
@@ -200,7 +200,7 @@ router.put('/tasks/:id', async (req, res) => {
     }
 })
 
-router.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', ensureAuthenticated, async (req, res) => {
     const taskId = Number(req.params.id);
 
     try {
@@ -216,7 +216,7 @@ router.delete('/tasks/:id', async (req, res) => {
 })
 
 // Toggle Task Completion
-router.patch('/tasks/:id/completion', async (req, res) => {
+router.patch('/tasks/:id/completion', ensureAuthenticated, async (req, res) => {
   const taskId = Number(req.params.id);
   const { completed } = req.body;
 
@@ -256,7 +256,7 @@ router.patch('/tasks/:id/completion', async (req, res) => {
 });
 
 // Toggle Checklist Completion
-router.patch('/checklists/:id/completion', async (req, res) => {
+router.patch('/checklists/:id/completion', ensureAuthenticated, async (req, res) => {
   const checklistId = Number(req.params.id);
   const { completed } = req.body;
 

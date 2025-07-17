@@ -25,6 +25,7 @@ jobs:
             echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" >> backend/.env
             echo "CHANNEL_ID=${{ secrets.CHANNEL_ID }}" >> backend/.env
             echo "API_URL=${{ secrets.API_URL }}" >> backend/.env
+            echo "BOT_API_KEY=${{ secrets.BOT_API_KEY }}" >> backend/.env
 
 
         - name: Create frontend .env file
