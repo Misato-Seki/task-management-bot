@@ -64,4 +64,23 @@ router.get('/auth/check', (req, res) => {
   }
   return res.json({ authenticated: false });
 });
+
+// Logout
+router.post('/auth/logout', function(req, res, next){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    // Clears all session data
+    req.session.destroy((err) => {
+      if(err) {
+        console.log('Failed to destroy session', err)
+        return next(err)
+      }
+      // Removes the session cookie
+      res.clearCookie('connect.sid')
+      res.json({ success: true })
+    })
+  });
+});
+
 module.exports = router;
+

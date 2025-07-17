@@ -52,7 +52,8 @@ export default function Dashboard() {
                     return;
                 }
                 const events = await res.json();
-                setEvents(events);
+                const filteredEvents = events.filter((event: Event) => event.colorId !== '7' )
+                setEvents(filteredEvents);
                 setEventLoading(false);
             })
             .catch(() => {
@@ -60,6 +61,9 @@ export default function Dashboard() {
                 setEventLoading(false);
             });
     }, [router]);
+
+    //debug
+    console.log("Fetched Events: ", events)
 
     // Fetch Habits
     useEffect(() => {

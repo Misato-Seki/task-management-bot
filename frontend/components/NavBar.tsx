@@ -6,11 +6,21 @@ import {
     NavigationMenuTrigger,
     NavigationMenuContent
 } from "@/components/ui/navigation-menu"
-import { Menu } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 export default function NavBar() {
+    const router = useRouter()
+
+    const handleLogout = async() => {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/logout`, {
+            method: "POST",
+            credentials: "include"
+        })
+        router.push('/')
+    }
     return (
         <nav
             className="relative flex items-center justify-between bg-[#5093B4] px-[20px] py-[10px]"
@@ -27,7 +37,7 @@ export default function NavBar() {
 
             {/* Desktop Menu */}
             <NavigationMenu viewport={false} className="hidden md:flex">
-                <NavigationMenuList className="gap-[30px]">
+                <NavigationMenuList className="gap-3">
                     <NavigationMenuItem>
                         <NavigationMenuLink href="/" className="text-white hover:text-[#5093B4] text-base font-medium">Home</NavigationMenuLink>
                     </NavigationMenuItem>
@@ -37,6 +47,14 @@ export default function NavBar() {
                     <NavigationMenuItem>
                         <NavigationMenuLink href="/task" className="text-white hover:text-[#5093B4] text-base font-medium">Task</NavigationMenuLink>
                     </NavigationMenuItem>
+                    <NavigationMenuItem onClick={handleLogout} className="cursor-pointer">
+                        <NavigationMenuLink className="flex items-center justify-center" style={{ minHeight: 36 }}>
+                            <LogOut
+                                className="text-white hover:text-[#5093B4] transition-colors duration-200"
+                            />
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    
                 </NavigationMenuList>
             </NavigationMenu>
 
@@ -51,6 +69,11 @@ export default function NavBar() {
                             <NavigationMenuLink href="/" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Home</NavigationMenuLink>
                             <NavigationMenuLink href="/dashboard" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Dashboard</NavigationMenuLink>
                             <NavigationMenuLink href="/task" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Task</NavigationMenuLink>
+                            <NavigationMenuLink className="" style={{ minHeight: 36 }}>
+                            <LogOut
+                                className="text-[#5093B4] hover:text-[#A2D2E2] transition-colors duration-200"
+                            />
+                        </NavigationMenuLink>
                         </NavigationMenuContent>
 
                     </NavigationMenuItem>

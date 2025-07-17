@@ -1,12 +1,13 @@
 const express = require('express')
 const { PrismaClient } = require('../generated/prisma')
+const ensureAuthenticated = require('./middleware')
 
 const router = express.Router();
 const prisma = new PrismaClient()
 
 
 // 習慣の一覧取得
-router.get('/habits', async (req, res) => {
+router.get('/habits', ensureAuthenticated, async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -49,7 +50,7 @@ router.get('/habits', async (req, res) => {
   });  
 
 // 習慣を作成
-router.post('/habits', async(req, res) => {
+router.post('/habits', ensureAuthenticated, async(req, res) => {
     const { title, goal, } = req.body
     try {
         const habit = await prisma.habit.create({
@@ -66,7 +67,7 @@ router.post('/habits', async(req, res) => {
 })
 
 // 習慣を更新
-router.put('/habits/:id', async(req, res) => {
+router.put('/habits/:id', ensureAuthenticated, async(req, res) => {
     const habitId = Number(req.params.id)
     const { title, goal, archived } = req.body
     try {
@@ -81,7 +82,7 @@ router.put('/habits/:id', async(req, res) => {
 })
 
 // 習慣を削除
-router.delete('/habits/:id', async(req, res) => {
+router.delete('/habits/:id', ensureAuthenticated, async(req, res) => {
     const habitId = Number(req.params.id)
     try {
         await prisma.habit.delete({
@@ -94,7 +95,7 @@ router.delete('/habits/:id', async(req, res) => {
 })
 
 // 習慣の記録を登録（実行済み）
-router.post('/habits/:id/log', async (req, res) => {
+router.post('/habits/:id/log', ensureAuthenticated, async (req, res) => {
     const habitId = parseInt(req.params.id, 10);
     const { date } = req.body;
 
@@ -127,7 +128,7 @@ router.post('/habits/:id/log', async (req, res) => {
 });
 
 // 習慣の記録を削除
-router.delete('/habits/:id/log', async (req, res) => {
+router.delete('/habits/:id/log', ensureAuthenticated, async (req, res) => {
     const habitId = parseInt(req.params.id, 10);
     const { date } = req.body;
   
