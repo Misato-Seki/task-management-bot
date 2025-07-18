@@ -17,15 +17,17 @@ export default function HabitEditModal({ habit, open, onClose, onSave, onDelete 
     const [goal, setGoal] = useState(habit?.goal || 1);
     const [goalInput, setGoalInput] = useState(habit?.goal?.toString() || "1");
 
-
-
     useEffect(() => {
-        if (habit) {
+        if (!habit) {
+            setTitle("");
+            setGoal(1);
+            setGoalInput("1")
+        } else {
             setTitle(habit.title);
             setGoal(habit.goal);
             setGoalInput(habit.goal.toString())
         }
-    }, [habit]);
+    }, [habit, open]);
 
     return (
         <Dialog open={open} onOpenChange={onClose}>

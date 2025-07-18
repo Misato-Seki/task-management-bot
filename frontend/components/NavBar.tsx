@@ -69,7 +69,7 @@ export default function NavBar() {
                             <NavigationMenuLink href="/" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Home</NavigationMenuLink>
                             <NavigationMenuLink href="/dashboard" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Dashboard</NavigationMenuLink>
                             <NavigationMenuLink href="/task" className="text-[#5093B4] hover:text-[#A2D2E2] text-base font-medium">Task</NavigationMenuLink>
-                            <NavigationMenuLink className="" style={{ minHeight: 36 }}>
+                            <NavigationMenuLink onClick={handleLogout} style={{ minHeight: 36 }}>
                             <LogOut
                                 className="text-[#5093B4] hover:text-[#A2D2E2] transition-colors duration-200"
                             />
