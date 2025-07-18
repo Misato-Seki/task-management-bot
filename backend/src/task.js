@@ -46,6 +46,7 @@ router.get('/tasks', ensureAuthenticated, async (req, res) => {
 
 router.get('/tasks/today', ensureAuthenticated, async (req, res) => {
   try {
+    // Tasks with the checklist with duedate within 7 days from today
     const tasks = await prisma.task.findMany({
       orderBy: {
         deadline: 'asc'
@@ -89,19 +90,26 @@ router.get('/tasks/today', ensureAuthenticated, async (req, res) => {
       },
     });
 
-    const taskWithProgress = tasks.map(task => {
-      const completedChecklistItems = task.checklist.filter(item => item.completed);
-      const totalChecklistItems = task.checklist.length;
-      const progress = totalChecklistItems === 0 ? 0 : (completedChecklistItems.length / totalChecklistItems) * 100;
+    // Tasks with all checklist
+    const allTasks = await prisma.task.findMany({
+      include: { checklist: true }
+    })
+
+    // Generate Progress
+    const allTasksMap = new Map(allTasks.map(task => [task.id, task]))
+    const tasksWithProgress = tasks.map(task => {
+      const allChecklist = allTasksMap.get(task.id)?.checklist || [];
+      const completedChecklistItems = allChecklist.filter(item => item.completed);
+      const totalChecklistItems = allChecklist.length;
+      const progress = totalChecklistItems === 0 ? 0 : (completedChecklistItems.length / totalChecklistItems) * 100
       return {
         ...task,
         progress,
-        checklistCount: task.checklist.length,
-        completedCount: task.checklist.filter(item => item.completed).length
-      };
+        checklistCount: totalChecklistItems,
+        completedCount: completedChecklistItems.length
+      }
     })
-
-    res.json({ tasks: taskWithProgress });
+    res.json({ tasks: tasksWithProgress });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
