@@ -3,10 +3,9 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import GoogleIcon from "@mui/icons-material/Google";
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
-// import { useRouter } from 'next/navigation'
 export default function Home() {
-  // const router = useRouter();
   return (
     <section className="flex flex-col items-center justify-center min-h-[70vh] h-screen w-full bg-[#F1F7F8] md:flex-row">
       {/* Hero Image */}
@@ -29,9 +28,15 @@ export default function Home() {
         <p className="text-xl sm:text-2xl md:text-3xl font-normal text-[#69B9D8] font-sans">
           productivity hub
         </p>
-        <a href={`${process.env.NEXT_PUBLIC_API_URL}auth/google`}>
-          <Button variant="taskbotBlue"><GoogleIcon/>Login with Google</Button>
-        </a>
+        <div className="w-[80%] md:w-[50%]">
+          <p className="text-sm text-center mb-1 text-red-400">Only administrators are allowed to log in.</p>
+          <a href={`${process.env.NEXT_PUBLIC_API_URL}auth/google`}>
+            <Button variant="taskbotBlue" className="w-full mb-3"><GoogleIcon/>Login with Google</Button>
+          </a>
+          <a href="https://youtu.be/3Ur6FfC2gfM" target="_blank">
+            <Button variant="taskbotBlue" className="w-full"><YouTubeIcon/>Demo on Youtube</Button>
+          </a>
+        </div>
       </div>
     </section>
   );

@@ -36,7 +36,7 @@ async function sendBotMessage() {
 
     let eventMessage = '## 🗓️ Events:\n'
     if(!events || events.length === 0) {
-        eventMessage += '- No events for today.\n'
+        eventMessage += '- No events for today.'
     } else {
         eventMessage += events.map(event => {
             const start = event.start.dateTime || event.start.date;

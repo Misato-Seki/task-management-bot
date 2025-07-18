@@ -47,4 +47,4 @@ The goal of this project is to **help users improve their self-management skills
 ## **🔗 Links**
 
 - [Demo(Website)](https://taskbot.misatosan.com/)
-- [Demo(Youtube)](https://www.youtube.com/watch?v=b9PKrZLI4pE)
+- [Demo(Youtube)](https://youtu.be/3Ur6FfC2gfM)
