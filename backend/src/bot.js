@@ -64,7 +64,7 @@ async function sendBotMessage() {
         taskMessage += "- No tasks for today.\n"
     } else {
         tasks.tasks.forEach(task => {
-            taskMessage += `- ${task.title}\n`
+            taskMessage += `- ${task.title} - ${format(new Date(task.deadline), "MMM dd (EEE)")}\n`
             if(task.checklist && task.checklist.length > 0) {
                 task.checklist.forEach(item => {
                     taskMessage += `  - ${item.title} - ${format(new Date(item.deadline), "MMM dd (EEE)")}\n`
