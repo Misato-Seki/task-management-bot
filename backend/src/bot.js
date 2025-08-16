@@ -2,7 +2,7 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const cron = require('node-cron');
 const dotenv = require('dotenv');
-const { format } = require('date-fns');
+const { format, formatDate } = require('date-fns');
 // const { utcToZonedTime } = require('date-fns-tz');
 const { getAccessTokenFromRefreshToken } = require('./token')
 
@@ -28,7 +28,7 @@ async function sendBotMessage() {
     }).then(res => res.json());
 
     const accessToken = await getAccessTokenFromRefreshToken()
-    const events = await fetch(`${process.env.API_URL}/calendar/today`, {
+    const events = await fetch(`${process.env.API_URL}/calendar/tomorrow`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
         }
@@ -41,7 +41,6 @@ async function sendBotMessage() {
         eventMessage += events.map(event => {
             const start = event.start.dateTime || event.start.date;
             const timeZone = 'Europe/Helsinki';
-            // const zonedDate = utcToZonedTime(new Date(start), timeZone);
             const date = new Date(start);
             const timeString = new Intl.DateTimeFormat('en-GB', {
                 hour: '2-digit',
@@ -49,7 +48,6 @@ async function sendBotMessage() {
                 timeZone,
                 hour12: false
             }).format(date);
-            // return `- ${event.summary} (${format(zonedDate, "HH:mm")})`;
             return `- ${event.summary} - ${timeString}`;
           }).join('\n');
     }
@@ -73,7 +71,28 @@ async function sendBotMessage() {
         })
     }
 
-    const message = `# ✨ ${format(new Date(), "MMM dd (EEE)")}\n` + eventMessage + habitMessage + taskMessage;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const message = `# ✨ ${format(tomorrow, "MMM dd (EEE)")}\n` + eventMessage + habitMessage + taskMessage;
+    const channel = client.channels.cache.get(CHANNEL_ID);
+    channel.send(message);
+}
+
+async function sendMonthlyReport() {
+    const habits = await fetch(`${process.env.API_URL}/habits/monthly-report`, {
+        headers: { 'x-api-key' : process.env.BOT_API_KEY }
+    }).then(res => res.json())
+
+    let message = `# 🌱 Monthly Report - ${format(new Date(), "MMM")}\n`;
+    if(!habits || habits.length === 0) {
+        message += "- No habits for this month.\n";
+    }
+    else {
+        message += habits.map(habit => {
+            return `- ${habit.title} - ${habit.logCount}/${habit.goal} (${habit.progress * 100}%)`
+        }).join('\n');
+    }
     const channel = client.channels.cache.get(CHANNEL_ID);
     channel.send(message);
 }
@@ -83,12 +102,24 @@ client.once(Events.ClientReady, async readyClient => {
 
     //テスト送信: Bot起動時に1度だけ送信
     sendBotMessage();
+    sendMonthlyReport();
 
-    cron.schedule('0 6 * * *', () => {
+    cron.schedule('0 21 * * *', () => {
         sendBotMessage();
     },{
         timezone: 'Europe/Helsinki'
     });
+
+    cron.schedule('0 23 * * *', () => {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        if(tomorrow.getDate() === 1) {
+            sendMonthlyReport();
+        } 
+    }, {
+        timezone: 'Europe/Helsinki'
+    })
 });
 
 // Log in to Discord with your client's token

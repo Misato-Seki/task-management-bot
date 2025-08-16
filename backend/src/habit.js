@@ -158,6 +158,32 @@ router.delete('/habits/:id/log', ensureAuthenticated, async (req, res) => {
       res.status(500).json({ error: "Failed to delete habit log." });
     }
   });
+
+// Monthly report
+router.get('/habits/monthly-report', ensureAuthenticated, async (req, res) => {
+  const habits = await prisma.habit.findMany({
+        include: {
+          logs: true,
+        },
+      });
+
+  const habitsWithProgress = habits.map((habit) => {
+    const logCount = habit.logs.length;
+    const progress = habit.goal > 0 ? Math.round((logCount / habit.goal) * 10000) / 10000 : 0;
+
+    return {
+      id: habit.id,
+      title: habit.title,
+      goal: habit.goal,
+      logCount,
+      progress,
+    };
+
+  })
+
+  res.json(habitsWithProgress);
+})
+
   
 
 
