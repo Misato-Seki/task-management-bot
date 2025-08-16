@@ -26,7 +26,7 @@ router.get('/calendar/today', async (req, res) => {
       singleEvents: true,
       orderBy: 'startTime',
     });
-    const filteredEvent = events.data.items.filter(event => ['1', '2', '3', '4', '5', '6', '8', '9'].includes(event.colorId))
+    const filteredEvent = events.data.items.filter(event => event.colorId !== '7' && event.colorId !== undefined);
     res.json(filteredEvent);
   } catch (error) {
     console.error('Google Calendar API error:', error);
@@ -58,7 +58,7 @@ router.get('/calendar/tomorrow', async (req, res) => {
       singleEvents: true,
       orderBy: 'startTime',
     });
-    const filteredEvent = events.data.items.filter(event => ['1', '2', '3', '4', '5', '6', '8', '9'].includes(event.colorId))
+    const filteredEvent = events.data.items.filter(event => event.colorId !== '7' && event.colorId !== undefined);
     res.json(filteredEvent);
   } catch (error) {
     console.error('Google Calendar API error:', error);
