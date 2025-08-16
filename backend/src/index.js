@@ -35,7 +35,7 @@ app.use(cors({
 app.use(session({
   secret: 'secret',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
 }));
 
 app.use(passport.initialize()); // initialize passport

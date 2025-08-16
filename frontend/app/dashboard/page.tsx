@@ -52,8 +52,7 @@ export default function Dashboard() {
                     return;
                 }
                 const events = await res.json();
-                const filteredEvents = events.filter((event: Event) => event.colorId !== '7' )
-                setEvents(filteredEvents);
+                setEvents(events);
                 setEventLoading(false);
             })
             .catch(() => {
@@ -61,6 +60,7 @@ export default function Dashboard() {
                 setEventLoading(false);
             });
     }, [router]);
+    
 
     // Fetch Habits
     useEffect(() => {

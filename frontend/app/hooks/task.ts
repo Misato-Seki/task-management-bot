@@ -42,8 +42,9 @@ export async function fetchTodaysTasks(
         const data = await res.json();
         setTasks(Array.isArray(data.tasks) ? data.tasks : []);
         setTaskError(null)
-    } catch {
+    } catch (error) {
         setTaskError('Failed to fetch Tasks');
+        console.error('Error fetching today\'s tasks:', error);
     } finally {
         setTaskLoading(false);
     }

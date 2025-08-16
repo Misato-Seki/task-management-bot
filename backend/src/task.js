@@ -1,7 +1,7 @@
 const express = require('express')
 const { PrismaClient } = require('../generated/prisma')
 const { toZonedTime } = require('date-fns-tz');
-const { startOfDay, endOfDay, addDays } = require('date-fns');
+const { endOfDay, addDays } = require('date-fns');
 const ensureAuthenticated = require('./middleware')
 
 
