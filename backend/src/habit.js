@@ -169,7 +169,7 @@ router.get('/habits/monthly-report', ensureAuthenticated, async (req, res) => {
 
   const habitsWithProgress = habits.map((habit) => {
     const logCount = habit.logs.length;
-    const progress = habit.goal > 0 ? Math.round((logCount / habit.goal) * 10000) / 10000 : 0;
+    const progress = habit.goal > 0 ? Math.round((logCount / habit.goal) * 1000) / 1000 : 0;
 
     return {
       id: habit.id,
