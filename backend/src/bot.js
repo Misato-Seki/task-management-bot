@@ -98,20 +98,20 @@ async function sendMonthlyReport() {
 }
 
 //
-async function fetchSettings() {
-    try {
-        const response = await fetch(`${process.env.API_URL}/setting`, {
-            headers: { 'x-api-key': process.env.BOT_API_KEY }
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    } catch (error) {
-        console.error('Error fetching settings:', error);
-        return { botMessageCronTime: '0 21 * * *' }; // Default cron time if fetch fails
-    }
-}
+// async function fetchSettings() {
+//     try {
+//         const response = await fetch(`${process.env.API_URL}/setting`, {
+//             headers: { 'x-api-key': process.env.BOT_API_KEY }
+//         });
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+//         return response.json();
+//     } catch (error) {
+//         console.error('Error fetching settings:', error);
+//         return { botMessageCronTime: '0 21 * * *' }; // Default cron time if fetch fails
+//     }
+// }
 
 
 client.once(Events.ClientReady, async readyClient => {
@@ -121,22 +121,11 @@ client.once(Events.ClientReady, async readyClient => {
     sendBotMessage();
     sendMonthlyReport();
 
-    let botMessageCronJob;
-    const settingsArray = await fetchSettings();
-    const settings = settingsArray[0] || {};
-    let botMessageCronTime = `${settings.botMessageMinute ?? 0} ${settings.botMessageHour ?? 21} * * *`;
-    console.log(`Bot message cron time: ${botMessageCronTime}`);
-
-    function scheduleBotMessage(cronTime) {
-        if (botMessageCronJob) botMessageCronJob.stop();
-        botMessageCronJob = cron.schedule(cronTime, async () => {
-            await sendBotMessage();
-        }, {
-            timezone: 'Europe/Helsinki'
-        })
-    }
-
-    scheduleBotMessage(botMessageCronTime);
+    cron.schedule('0 21 * * *', () => {
+        sendBotMessage();
+    }, {
+        timezone: 'Europe/Helsinki'
+    });
 
     cron.schedule('0 23 * * *', () => {
         const today = new Date();
