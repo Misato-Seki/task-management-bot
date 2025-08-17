@@ -121,7 +121,7 @@ client.once(Events.ClientReady, async readyClient => {
     sendBotMessage();
     sendMonthlyReport();
 
-    cron.schedule('0 13 * * *', () => {
+    cron.schedule('0 21 * * *', () => {
         sendBotMessage();
     }, {
         timezone: 'Europe/Helsinki'
