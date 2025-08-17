@@ -47,9 +47,9 @@ export default function NavBar() {
                     {/* <NavigationMenuItem>
                         <NavigationMenuLink href="/task" className="text-white hover:text-[#5093B4] text-base font-medium">Task</NavigationMenuLink>
                     </NavigationMenuItem> */}
-                    <NavigationMenuItem>
+                    {/* <NavigationMenuItem>
                         <NavigationMenuLink href="/setting" className="text-white hover:text-[#5093B4] text-base font-medium">Setting</NavigationMenuLink>
-                    </NavigationMenuItem>
+                    </NavigationMenuItem> */}
                     <NavigationMenuItem onClick={handleLogout} className="cursor-pointer">
                         <NavigationMenuLink className="flex items-center justify-center" style={{ minHeight: 36 }}>
                             <LogOut
