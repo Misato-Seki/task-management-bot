@@ -7,7 +7,7 @@ import Habits from '@/app/dashboard/Habits';
 import Tasks from '@/app/dashboard/Tasks';
 import { Event, Habit, Task } from '@/app/types/global';
 import { fetchHabits } from '../hooks/habit';
-import { fetchTodaysTasks } from '../hooks/task';
+import { fetchTasks } from '../hooks/task';
 
 
 
@@ -69,7 +69,7 @@ export default function Dashboard() {
 
     // Fetch Tasks
     useEffect(() => {
-        fetchTodaysTasks(setTasks, setTaskError, setTaskLoading);
+        fetchTasks(setTasks, setTaskError, setTaskLoading);
     }, []);
 
     return (
@@ -99,7 +99,7 @@ export default function Dashboard() {
                     taskLoading = {taskLoading}
                     taskError = {taskError}
                     tasks = {tasks}
-                    refetchTasks={() => fetchTodaysTasks(setTasks, setTaskError, setTaskLoading)}
+                    refetchTasks={() => fetchTasks(setTasks, setTaskError, setTaskLoading)}
                 />
             </main>
         </div>

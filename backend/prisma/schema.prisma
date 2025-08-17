@@ -70,3 +70,11 @@ model Checklist {
   taskId Int
   task Task @relation("Task_Checklist", fields: [taskId], references: [id], onDelete: Cascade)
 }
+
+model Setting {
+  id Int @id @default(autoincrement())
+  botMessageHour Int @default(21)
+  botMessageMinute Int @default(0)
+  monthlyReportHour Int @default(23)
+  monthlyReportMinute Int @default(0)
+}

@@ -8,6 +8,7 @@ const calendarRoutes = require('./calendar');
 const habitRoutes = require('./habit')
 const taskRoutes = require('./task');
 const cron = require('node-cron');
+const settingRoutes = require('./setting');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -47,6 +48,7 @@ app.use(authRoutes); // use the authentication routes
 app.use(calendarRoutes);
 app.use(habitRoutes);
 app.use(taskRoutes);
+app.use(settingRoutes); // use the setting routes
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');

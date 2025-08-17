@@ -2,6 +2,7 @@
 
 echo "Running migrations..."
 npx prisma migrate deploy
+npx prisma db seed
 
 echo "Starting the application..."
 node src/index.js &
