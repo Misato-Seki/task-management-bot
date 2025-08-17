@@ -118,8 +118,15 @@ client.once(Events.ClientReady, async readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 
     //テスト送信: Bot起動時に1度だけ送信
-    sendBotMessage();
-    sendMonthlyReport();
+    setTimeout(async () => {
+        console.log(`[TEST] Cron job triggered at: ${new Date().toISOString()}`);
+        try {
+            await sendBotMessage();
+            await sendMonthlyReport();
+        } catch (error) {
+            console.error('Error during delayed test execution:', error);
+        }
+    }, 5 * 60 * 1000); // 5分後に実行
 
     cron.schedule('0 21 * * *', () => {
         sendBotMessage();
